@@ -1,46 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import {useState} from "react";
 import Link from "next/link";
-import {
-  ArrowBack,
-  CalendarMonth,
-  Schedule,
-  LocationOn,
-  Description,
-  Phone,
-  Email,
-  Warning,
-  CheckCircle,
-  Cancel,
-  FavoriteBorder,
-  ChevronRight,
-} from "@mui/icons-material";
-import {
-  Box,
-  Typography,
-  Paper,
-  Stack,
-  IconButton,
-  Chip,
-  Grid,
-  Stepper,
-  Step,
-  StepLabel,
-  TextField,
-} from "@mui/material";
-import {
-  canTransition,
-  getAvailableTransitions,
-  STATUS_CONFIG,
-  formatDateBerlin,
-  formatTimeBerlin,
-  formatDuration,
-  formatCurrency,
-} from "@/lib/utils";
-import type { Appointment, AppointmentStatus } from "@/types";
-import { StatusBadge, TypeBadge } from "@/components/ui/Badge";
-import { Avatar, Button, Card, Dialog } from "@/components/ui";
+import {ArrowBack, CalendarMonth, Schedule, LocationOn, Description, Phone, Email, Warning, CheckCircle, Cancel, FavoriteBorder, ChevronRight} from "@mui/icons-material";
+import {Box, Typography, Paper, Stack, IconButton, Chip, Grid, Stepper, Step, StepLabel, TextField} from "@mui/material";
+import {canTransition, getAvailableTransitions, STATUS_CONFIG, formatDateBerlin, formatTimeBerlin, formatDuration, formatCurrency} from "@/lib/utils";
+import type {Appointment, AppointmentStatus} from "@/types";
+import {StatusBadge, TypeBadge} from "@/components/ui/Badge";
+import {Avatar, Button, Card, Dialog} from "@/components/ui";
 
 const TRANSITION_LABELS: Record<AppointmentStatus, string> = {
   CONFIRMED: "Confirm Appointment",
@@ -70,25 +37,26 @@ interface AppointmentDetailProps {
   appointment: Appointment | null;
 }
 
-export default function AppointmentDetail({ appointment }: AppointmentDetailProps) {
+export default function AppointmentDetail({appointment}: AppointmentDetailProps) {
   const [currentStatus, setCurrentStatus] = useState<AppointmentStatus>(appointment?.status ?? "PENDING");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
+  // If the appointment is not found, show a message
   if (!appointment) {
     return (
-      <Box sx={{ textAlign: "center", py: 12 }}>
+      <Box sx={{textAlign: "center", py: 12}}>
         <Typography variant="h6" color="text.secondary">
           Appointment not found
         </Typography>
-        <Button component={Link} href="/appointments" variant="ghost" startIcon={<ArrowBack />} sx={{ mt: 2 }}>
+        <Button component={Link} href="/appointments" variant="ghost" startIcon={<ArrowBack />} sx={{mt: 2}}>
           Back to appointments
         </Button>
       </Box>
     );
   }
 
-  const { doctor, patient, clinic } = appointment;
+  const {doctor, patient, clinic} = appointment;
   const availableTransitions = getAvailableTransitions(currentStatus);
   const displayId = appointment.id.length > 12 ? appointment.id.slice(0, 8) : appointment.id;
 
@@ -110,8 +78,8 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
   const isFinalState = currentStatus === "CANCELLED" || currentStatus === "COMPLETED" || currentStatus === "NO_SHOW";
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: "auto", py: 3 }}>
-      <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
+    <Box sx={{maxWidth: 1200, mx: "auto", py: 3}}>
+      <Stack direction="row" spacing={2} alignItems="center" sx={{mb: 3}}>
         <IconButton component={Link} href="/appointments">
           <ArrowBack />
         </IconButton>
@@ -122,29 +90,24 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
             </Typography>
             <StatusBadge status={currentStatus} />
           </Stack>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
-            {formatDateBerlin(appointment.scheduledAt)} at {formatTimeBerlin(appointment.scheduledAt)} ·{" "}
-            {formatDuration(appointment.durationMinutes)}
+          <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
+            {formatDateBerlin(appointment.scheduledAt)} at {formatTimeBerlin(appointment.scheduledAt)} · {formatDuration(appointment.durationMinutes)}
           </Typography>
         </Box>
       </Stack>
 
       <Grid container spacing={3}>
-        <Grid size={{ xs: 12, lg: 8 }}>
+        <Grid size={{xs: 12, lg: 8}}>
           <Stack spacing={2}>
             <Card>
-              <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 3 }}>
+              <Stack direction="row" spacing={1} alignItems="center" sx={{mb: 3}}>
                 <FavoriteBorder color="primary" fontSize="small" />
-                <Typography
-                  variant="subtitle2"
-                  fontWeight={700}
-                  sx={{ textTransform: "uppercase", color: "text.secondary" }}
-                >
+                <Typography variant="subtitle2" fontWeight={700} sx={{textTransform: "uppercase", color: "text.secondary"}}>
                   Appointment Status
                 </Typography>
               </Stack>
 
-              <Stepper activeStep={STATE_ORDER.indexOf(currentStatus)} alternativeLabel sx={{ mb: 3 }}>
+              <Stepper activeStep={STATE_ORDER.indexOf(currentStatus)} alternativeLabel sx={{mb: 3}}>
                 {STATE_ORDER.map((state) => {
                   const config = STATUS_CONFIG[state];
                   return (
@@ -156,19 +119,14 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
               </Stepper>
 
               {(currentStatus === "CANCELLED" || currentStatus === "NO_SHOW") && (
-                <Box sx={{ mb: 3, textAlign: "center" }}>
+                <Box sx={{mb: 3, textAlign: "center"}}>
                   <StatusBadge status={currentStatus} size="medium" />
                 </Box>
               )}
 
               {!isFinalState && availableTransitions.length > 0 && (
                 <Box>
-                  <Typography
-                    variant="caption"
-                    color="text.secondary"
-                    fontWeight={600}
-                    sx={{ mb: 1.5, display: "block" }}
-                  >
+                  <Typography variant="caption" color="text.secondary" fontWeight={600} sx={{mb: 1.5, display: "block"}}>
                     Available actions:
                   </Typography>
                   <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
@@ -184,7 +142,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                           size="small"
                           sx={{
                             bgcolor: `${color}.main`,
-                            "&:hover": { bgcolor: `${color}.dark` },
+                            "&:hover": {bgcolor: `${color}.dark`},
                           }}
                         >
                           {TRANSITION_LABELS[nextStatus]}
@@ -196,7 +154,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
               )}
 
               {isFinalState && (
-                <Paper sx={{ p: 2, bgcolor: "grey.50" }}>
+                <Paper sx={{p: 2, bgcolor: "grey.50"}}>
                   <Stack direction="row" spacing={1.5} alignItems="center">
                     <CheckCircle color="disabled" fontSize="small" />
                     <Typography variant="body2" color="text.secondary">
@@ -208,16 +166,12 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
             </Card>
 
             <Card>
-              <Typography
-                variant="subtitle2"
-                fontWeight={700}
-                sx={{ textTransform: "uppercase", color: "text.secondary", mb: 2 }}
-              >
+              <Typography variant="subtitle2" fontWeight={700} sx={{textTransform: "uppercase", color: "text.secondary", mb: 2}}>
                 Appointment Details
               </Typography>
               <Stack spacing={2}>
                 <Stack direction="row" spacing={2}>
-                  <Box sx={{ p: 1.5, bgcolor: "primary.lighter", borderRadius: 2 }}>
+                  <Box sx={{p: 1.5, bgcolor: "primary.lighter", borderRadius: 2}}>
                     <CalendarMonth color="primary" fontSize="small" />
                   </Box>
                   <Box>
@@ -225,14 +179,13 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                       Date & Time
                     </Typography>
                     <Typography variant="body2" fontWeight={600}>
-                      {formatDateBerlin(appointment.scheduledAt)} at {formatTimeBerlin(appointment.scheduledAt)}{" "}
-                      (Europe/Berlin)
+                      {formatDateBerlin(appointment.scheduledAt)} at {formatTimeBerlin(appointment.scheduledAt)} (Europe/Berlin)
                     </Typography>
                   </Box>
                 </Stack>
 
                 <Stack direction="row" spacing={2}>
-                  <Box sx={{ p: 1.5, bgcolor: "secondary.lighter", borderRadius: 2 }}>
+                  <Box sx={{p: 1.5, bgcolor: "secondary.lighter", borderRadius: 2}}>
                     <Schedule color="secondary" fontSize="small" />
                   </Box>
                   <Box>
@@ -246,21 +199,21 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                 </Stack>
 
                 <Stack direction="row" spacing={2}>
-                  <Box sx={{ p: 1.5, bgcolor: "info.lighter", borderRadius: 2 }}>
+                  <Box sx={{p: 1.5, bgcolor: "info.lighter", borderRadius: 2}}>
                     <Description color="info" fontSize="small" />
                   </Box>
                   <Box>
                     <Typography variant="caption" color="text.secondary">
                       Type
                     </Typography>
-                    <Box sx={{ mt: 0.5 }}>
+                    <Box sx={{mt: 0.5}}>
                       <TypeBadge type={appointment.type} />
                     </Box>
                   </Box>
                 </Stack>
 
                 <Stack direction="row" spacing={2}>
-                  <Box sx={{ p: 1.5, bgcolor: "warning.lighter", borderRadius: 2 }}>
+                  <Box sx={{p: 1.5, bgcolor: "warning.lighter", borderRadius: 2}}>
                     <Description color="warning" fontSize="small" />
                   </Box>
                   <Box>
@@ -273,7 +226,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
 
                 {appointment.notes && (
                   <Stack direction="row" spacing={2}>
-                    <Box sx={{ p: 1.5, bgcolor: "primary.lighter", borderRadius: 2 }}>
+                    <Box sx={{p: 1.5, bgcolor: "primary.lighter", borderRadius: 2}}>
                       <Description color="primary" fontSize="small" />
                     </Box>
                     <Box>
@@ -286,9 +239,9 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                 )}
 
                 {(appointment.cancelReason || (currentStatus === "CANCELLED" && cancelReason)) && (
-                  <Paper sx={{ p: 2, bgcolor: "error.lighter" }}>
+                  <Paper sx={{p: 2, bgcolor: "error.lighter"}}>
                     <Stack direction="row" spacing={1.5}>
-                      <Cancel color="error" fontSize="small" sx={{ mt: 0.25 }} />
+                      <Cancel color="error" fontSize="small" sx={{mt: 0.25}} />
                       <Box>
                         <Typography variant="caption" color="error.dark" fontWeight={600}>
                           Cancellation Reason
@@ -305,44 +258,28 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
 
             {clinic && (
               <Card>
-                <Typography
-                  variant="subtitle2"
-                  fontWeight={700}
-                  sx={{ textTransform: "uppercase", color: "text.secondary", mb: 2 }}
-                >
+                <Typography variant="subtitle2" fontWeight={700} sx={{textTransform: "uppercase", color: "text.secondary", mb: 2}}>
                   Location
                 </Typography>
                 <Stack direction="row" spacing={2}>
-                  <Box sx={{ p: 1.5, bgcolor: "error.lighter", borderRadius: 2 }}>
+                  <Box sx={{p: 1.5, bgcolor: "error.lighter", borderRadius: 2}}>
                     <LocationOn color="error" fontSize="small" />
                   </Box>
                   <Box>
                     <Typography variant="body2" fontWeight={600}>
                       {clinic.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
                       {clinic.address?.street}, {clinic.address?.postalCode} {clinic.address?.city}
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {clinic.address?.state}
                     </Typography>
-                    <Stack direction="row" spacing={2} sx={{ mt: 1.5 }}>
-                      <Button
-                        component="a"
-                        href={`tel:${clinic.phone}`}
-                        variant="ghost"
-                        startIcon={<Phone fontSize="small" />}
-                        size="small"
-                      >
+                    <Stack direction="row" spacing={2} sx={{mt: 1.5}}>
+                      <Button component="a" href={`tel:${clinic.phone}`} variant="ghost" startIcon={<Phone fontSize="small" />} size="small">
                         {clinic.phone}
                       </Button>
-                      <Button
-                        component="a"
-                        href={`mailto:${clinic.email}`}
-                        variant="ghost"
-                        startIcon={<Email fontSize="small" />}
-                        size="small"
-                      >
+                      <Button component="a" href={`mailto:${clinic.email}`} variant="ghost" startIcon={<Email fontSize="small" />} size="small">
                         {clinic.email}
                       </Button>
                     </Stack>
@@ -353,18 +290,14 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
           </Stack>
         </Grid>
 
-        <Grid size={{ xs: 12, lg: 4 }}>
+        <Grid size={{xs: 12, lg: 4}}>
           <Stack spacing={2}>
             {doctor && (
               <Card>
-                <Typography
-                  variant="caption"
-                  fontWeight={700}
-                  sx={{ textTransform: "uppercase", color: "text.secondary", mb: 2, display: "block" }}
-                >
+                <Typography variant="caption" fontWeight={700} sx={{textTransform: "uppercase", color: "text.secondary", mb: 2, display: "block"}}>
                   Doctor
                 </Typography>
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                <Stack direction="row" spacing={2} alignItems="center" sx={{mb: 2}}>
                   <Avatar src={doctor.avatarUrl} firstName={doctor.firstName} lastName={doctor.lastName} size="lg" />
                   <Box>
                     <Typography variant="body2" fontWeight={600}>
@@ -375,7 +308,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                     </Typography>
                   </Box>
                 </Stack>
-                <Stack spacing={1} sx={{ mb: 2 }}>
+                <Stack spacing={1} sx={{mb: 2}}>
                   <Typography variant="caption" color="text.secondary" display="flex" alignItems="center" gap={1}>
                     <Phone fontSize="inherit" />
                     {doctor.phone}
@@ -392,7 +325,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                   fullWidth
                   endIcon={<ChevronRight fontSize="small" />}
                   size="small"
-                  sx={{ bgcolor: "primary.lighter", color: "primary.main" }}
+                  sx={{bgcolor: "primary.lighter", color: "primary.main"}}
                 >
                   View doctor profile
                 </Button>
@@ -401,14 +334,10 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
 
             {patient && (
               <Card>
-                <Typography
-                  variant="caption"
-                  fontWeight={700}
-                  sx={{ textTransform: "uppercase", color: "text.secondary", mb: 2, display: "block" }}
-                >
+                <Typography variant="caption" fontWeight={700} sx={{textTransform: "uppercase", color: "text.secondary", mb: 2, display: "block"}}>
                   Patient
                 </Typography>
-                <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
+                <Stack direction="row" spacing={2} alignItems="center" sx={{mb: 2}}>
                   <Avatar src={patient.avatarUrl} firstName={patient.firstName} lastName={patient.lastName} size="lg" />
                   <Box>
                     <Typography variant="body2" fontWeight={600}>
@@ -419,7 +348,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                     </Typography>
                   </Box>
                 </Stack>
-                <Stack spacing={1} sx={{ mb: patient.medicalHistory?.length ? 2 : 0 }}>
+                <Stack spacing={1} sx={{mb: patient.medicalHistory?.length ? 2 : 0}}>
                   <Typography variant="caption" color="text.secondary" display="flex" alignItems="center" gap={1}>
                     <Phone fontSize="inherit" />
                     {patient.phone}
@@ -436,18 +365,13 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                   )}
                 </Stack>
                 {patient.medicalHistory && patient.medicalHistory.length > 0 && (
-                  <Box sx={{ pt: 2, borderTop: 1, borderColor: "divider" }}>
-                    <Typography
-                      variant="caption"
-                      fontWeight={600}
-                      color="text.secondary"
-                      sx={{ mb: 1, display: "block" }}
-                    >
+                  <Box sx={{pt: 2, borderTop: 1, borderColor: "divider"}}>
+                    <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{mb: 1, display: "block"}}>
                       Medical History
                     </Typography>
                     <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
                       {patient.medicalHistory.map((item) => (
-                        <Chip key={item} label={item} size="small" color="warning" sx={{ fontSize: "0.65rem" }} />
+                        <Chip key={item} label={item} size="small" color="warning" sx={{fontSize: "0.65rem"}} />
                       ))}
                     </Stack>
                   </Box>
@@ -456,11 +380,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
             )}
 
             <Card>
-              <Typography
-                variant="caption"
-                fontWeight={700}
-                sx={{ textTransform: "uppercase", color: "text.secondary", mb: 2, display: "block" }}
-              >
+              <Typography variant="caption" fontWeight={700} sx={{textTransform: "uppercase", color: "text.secondary", mb: 2, display: "block"}}>
                 Metadata
               </Typography>
               <Stack spacing={1.5}>
@@ -468,7 +388,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
                   <Typography variant="caption" color="text.secondary">
                     Appointment ID
                   </Typography>
-                  <Typography variant="caption" fontFamily="monospace" fontWeight={600} sx={{ wordBreak: "break-all" }}>
+                  <Typography variant="caption" fontFamily="monospace" fontWeight={600} sx={{wordBreak: "break-all"}}>
                     {appointment.id}
                   </Typography>
                 </Stack>
@@ -513,18 +433,14 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
             <Button onClick={() => setShowCancelModal(false)} variant="outline">
               Keep Appointment
             </Button>
-            <Button
-              onClick={handleCancel}
-              variant="primary"
-              sx={{ bgcolor: "error.main", "&:hover": { bgcolor: "error.dark" } }}
-            >
+            <Button onClick={handleCancel} variant="primary" sx={{bgcolor: "error.main", "&:hover": {bgcolor: "error.dark"}}}>
               Cancel Appointment
             </Button>
           </>
         }
       >
         <Stack spacing={2}>
-          <Paper sx={{ p: 2, bgcolor: "error.lighter" }}>
+          <Paper sx={{p: 2, bgcolor: "error.lighter"}}>
             <Stack direction="row" spacing={1.5} alignItems="center">
               <Cancel color="error" />
               <Box>
@@ -545,7 +461,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
             value={cancelReason}
             onChange={(e) => setCancelReason(e.target.value)}
             placeholder="Please provide a reason..."
-            sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
+            sx={{"& .MuiOutlinedInput-root": {borderRadius: 3}}}
           />
         </Stack>
       </Dialog>
