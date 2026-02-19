@@ -1,24 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import {
-  Box,
-  Stack,
-  Typography,
-  TextField,
-  InputAdornment,
-  Select,
-  MenuItem,
-  Chip,
-  Switch,
-  FormControlLabel,
-  Paper,
-} from "@mui/material";
-import { ChevronRightRounded, Search as SearchIcon } from "@mui/icons-material";
+import { Box, Stack, Typography, Paper } from "@mui/material";
 import DoctorCard from "@/components/doctors/DoctorCard";
 import type { Doctor, Clinic } from "@/types";
-
-const SPECIALIZATIONS = ["All", "Cardiology", "Neurology", "General Practice", "Dermatology", "Orthopedics"];
+import DoctorDetailHeader from "@/components/doctors/DoctorDetailHeader";
+import DoctorFilters from "@/components/doctors/DoctorFilters";
 
 interface DoctorsListPageProps {
   doctors: Doctor[];
@@ -57,83 +44,23 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
 
   return (
     <Box sx={{ py: 4, px: 2 }}>
-      {/* Header */}
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight={700}>
-          Our Doctors
-        </Typography>
-        <Typography variant="body2" color="text.secondary">
-          {doctors.length} specialist{doctors.length !== 1 ? "s" : ""} available across {clinics.length} clinics
-        </Typography>
-      </Box>
+      <DoctorDetailHeader doctors={doctors} clinics={clinics} />
 
-      {/* Filters */}
-      <Paper sx={{ p: 3, mb: 3 }}>
-        <Stack spacing={2}>
-          <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-            {/* Search */}
-            <TextField
-              fullWidth
-              size="small"
-              placeholder="Search by name, specialization, or expertise..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <SearchIcon fontSize="small" color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
+      <DoctorFilters
+        search={search}
+        setSearch={setSearch}
+        selectedSpec={selectedSpec}
+        setSelectedSpec={setSelectedSpec}
+        onlyAvailable={onlyAvailable}
+        setOnlyAvailable={setOnlyAvailable}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
 
-            {/* Sort */}
-            <Select
-              value={sortBy}
-              size="small"
-              onChange={(e) => setSortBy(e.target.value as "rating" | "name" | "fee")}
-              displayEmpty
-              sx={{ minWidth: 160 }}
-              IconComponent={ChevronRightRounded}
-            >
-              <MenuItem value="rating">Sort: Top Rated</MenuItem>
-              <MenuItem value="name">Sort: Name</MenuItem>
-              <MenuItem value="fee">Sort: Lowest Fee</MenuItem>
-            </Select>
-          </Stack>
-
-          {/* Specializations & Availability */}
-          <Stack direction="row" spacing={1} flexWrap="wrap" alignItems="center">
-            {SPECIALIZATIONS.map((spec) => (
-              <Chip
-                key={spec}
-                label={spec}
-                size="small"
-                clickable
-                color={selectedSpec === spec ? "primary" : "default"}
-                variant={selectedSpec === spec ? "filled" : "outlined"}
-                onClick={() => setSelectedSpec(spec)}
-              />
-            ))}
-
-            <FormControlLabel
-              sx={{ ml: "auto" }}
-              control={
-                <Switch checked={onlyAvailable} onChange={() => setOnlyAvailable(!onlyAvailable)} color="primary" />
-              }
-              label="Available only"
-              labelPlacement="start"
-            />
-          </Stack>
-        </Stack>
-      </Paper>
-
-      {/* Results count */}
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Showing <strong>{filtered.length}</strong> doctor{filtered.length !== 1 ? "s" : ""}
       </Typography>
 
-      {/* Doctor Grid */}
       {filtered.length > 0 ? (
         <Stack spacing={2}>
           {filtered.map((doctor) => (

@@ -78,7 +78,7 @@ export default function AppointmentDetail({appointment}: AppointmentDetailProps)
   const isFinalState = currentStatus === "CANCELLED" || currentStatus === "COMPLETED" || currentStatus === "NO_SHOW";
 
   return (
-    <Box sx={{maxWidth: 1200, mx: "auto", py: 3}}>
+    <Box sx={{maxWidth: 1400, mx: "auto", py: 3}}>
       <Stack direction="row" spacing={2} alignItems="center" sx={{mb: 3}}>
         <IconButton component={Link} href="/appointments">
           <ArrowBack />

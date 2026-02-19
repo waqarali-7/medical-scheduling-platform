@@ -11,7 +11,7 @@ export default function DoctorsRecentActivity({ recentActivity }: { recentActivi
       </Typography>
       <Card>
         <Stack divider={<Box sx={{ borderBottom: 1, borderColor: "divider" }} />}>
-          {recentActivity.map((apt) => (
+          {recentActivity?.map((apt) => (
             <Stack key={apt.id} direction="row" spacing={2} alignItems="center" sx={{ py: 1.5 }}>
               {apt.patient && (
                 <Avatar
