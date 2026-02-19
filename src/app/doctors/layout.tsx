@@ -1,17 +1,17 @@
 import AppShell from "@/components/layout/AppShell";
 import { CurrentUserProvider } from "@/context/CurrentUserContext";
 import { getCurrentUser } from "@/lib/supabase/data";
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "Doctors",
 };
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DoctorsLayout({ children }: { children: React.ReactNode }) {
   const currentUser = await getCurrentUser();
   return (
     <CurrentUserProvider user={currentUser}>
-      <AppShell title="Dashboard">{children}</AppShell>
+      <AppShell title="Doctors">{children}</AppShell>
     </CurrentUserProvider>
   );
 }

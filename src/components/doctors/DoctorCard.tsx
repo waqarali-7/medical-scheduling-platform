@@ -4,35 +4,24 @@ import Avatar from "@/components/ui/Avatar";
 import Card from "@/components/ui/Card";
 import Divider from "@/components/ui/Divider";
 import IconButton from "@/components/ui/IconButton";
-import type { Doctor } from "@/types";
-import { CLINICS } from "@/data/dummy";
-import { cn, formatCurrency } from "@/lib/utils";
-import {
-  Star as StarIcon,
-  LocationOn as LocationOnIcon,
-  Public as PublicIcon,
-  AccessTime as AccessTimeIcon,
-  ChevronRight as ChevronRightIcon,
-} from "@mui/icons-material";
+import type {Doctor, Clinic} from "@/types";
+import {cn, formatCurrency} from "@/lib/utils";
+import {Star as StarIcon, LocationOn as LocationOnIcon, Public as PublicIcon, AccessTime as AccessTimeIcon, ChevronRight as ChevronRightIcon} from "@mui/icons-material";
 
 interface DoctorCardProps {
   doctor: Doctor;
+  clinics?: Clinic[];
   compact?: boolean;
 }
 
-export default function DoctorCard({ doctor, compact = false }: DoctorCardProps) {
-  const clinic = CLINICS.find((c) => c.id === doctor.clinicId);
+export default function DoctorCard({ doctor, clinics = [], compact = false }: DoctorCardProps) {
+  const clinic = clinics.find((c) => c.id === doctor.clinicId);
 
   return (
-    <Link href={`/doctors/${doctor.id}`} style={{ textDecoration: "none" }}>
+    <Link href={`/doctors/${doctor.id}`} style={{textDecoration: "none"}}>
       <Card className="p-5 rounded-2xl border border-gray-100 hover:shadow-md hover:border-sky-200 transition-all duration-200 cursor-pointer group">
         <div className="flex items-start gap-4">
-          <Avatar
-            src={doctor.avatarUrl}
-            firstName={doctor.firstName.replace("Dr. ", "")}
-            lastName={doctor.lastName}
-            size="lg"
-          />
+          <Avatar src={doctor.avatarUrl} firstName={doctor.firstName.replace("Dr. ", "")} lastName={doctor.lastName} size="lg" />
 
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -88,14 +77,9 @@ export default function DoctorCard({ doctor, compact = false }: DoctorCardProps)
               </div>
               <div className="flex items-center gap-2">
                 <span
-                  className={cn(
-                    "inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full",
-                    doctor.isAvailable ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500",
-                  )}
+                  className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full", doctor.isAvailable ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500")}
                 >
-                  <span
-                    className={cn("h-1.5 w-1.5 rounded-full", doctor.isAvailable ? "bg-emerald-500" : "bg-gray-400")}
-                  />
+                  <span className={cn("h-1.5 w-1.5 rounded-full", doctor.isAvailable ? "bg-emerald-500" : "bg-gray-400")} />
                   {doctor.isAvailable ? "Available" : "Unavailable"}
                 </span>
                 <IconButton>

@@ -13,6 +13,7 @@ export { default as StatCard } from "./StatCard";
 export { default as Switch } from "./Switch";
 export { default as Tabs } from "./Tabs";
 export { default as Tooltip } from "./Tooltip";
+export { default as Link } from "./Link";
 
 // Export badge components
 export { StatusBadge, TypeBadge } from "./Badge";

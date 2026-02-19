@@ -2,7 +2,7 @@
 
 import { Menu as MenuIcon, Add as AddIcon, Search as SearchIcon, Brightness4, Brightness7 } from "@mui/icons-material";
 
-import { CURRENT_USER } from "@/data/dummy";
+import { useCurrentUser } from "@/context/CurrentUserContext";
 import Button from "@/components/ui/Button";
 import NextLink from "../ui/Link";
 import { IconButton } from "../ui";
@@ -16,6 +16,7 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick, title }: HeaderProps) {
   const { mode, toggleMode } = useThemeMode();
+  const currentUser = useCurrentUser();
 
   return (
     <Box
@@ -113,8 +114,8 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
           cursor: "default",
         }}
       >
-        {CURRENT_USER.firstName.charAt(0)}
-        {CURRENT_USER.lastName.charAt(0)}
+        {currentUser?.firstName?.charAt(0) ?? "?"}
+        {currentUser?.lastName?.charAt(0) ?? ""}
       </Box>
     </Box>
   );

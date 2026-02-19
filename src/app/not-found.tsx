@@ -1,28 +1,36 @@
-import { Box, Typography, Button } from "@mui/material";
-import NextLink from "@/components/ui/Link";
+import Link from "next/link";
 
 export default function Custom404() {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        height: "100vh",
+        minHeight: "100vh",
         textAlign: "center",
-        px: 2,
+        padding: "1rem 2rem",
       }}
     >
-      <Typography variant="h2" sx={{ fontWeight: 700, mb: 2 }}>
-        404
-      </Typography>
-      <Typography variant="h5" sx={{ mb: 3 }}>
+      <h1 style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>404</h1>
+      <p style={{ fontSize: "1.25rem", marginBottom: "1.5rem", color: "#666" }}>
         Oops! Page not found.
-      </Typography>
-      <Button variant="contained" component={NextLink} href="/">
+      </p>
+      <Link
+        href="/dashboard"
+        style={{
+          display: "inline-block",
+          padding: "0.5rem 1.25rem",
+          backgroundColor: "#0ea5e9",
+          color: "white",
+          borderRadius: "8px",
+          fontWeight: 600,
+          textDecoration: "none",
+        }}
+      >
         Go to Dashboard
-      </Button>
-    </Box>
+      </Link>
+    </div>
   );
 }

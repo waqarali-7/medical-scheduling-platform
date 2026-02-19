@@ -29,8 +29,8 @@ function InnerTheme({ children }: { children: ReactNode }) {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
         <ThemeProviderWrapper>
           <InnerTheme>{children}</InnerTheme>
         </ThemeProviderWrapper>

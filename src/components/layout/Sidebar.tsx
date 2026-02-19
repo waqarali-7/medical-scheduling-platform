@@ -25,7 +25,7 @@ import {
 import { usePathname } from "next/navigation";
 import NextLink from "../ui/Link";
 import Link from "next/link";
-import { CURRENT_USER } from "@/data/dummy";
+import { useCurrentUser } from "@/context/CurrentUserContext";
 
 const NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: <Dashboard /> },
@@ -43,6 +43,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkClick }: SidebarProps) {
   const pathname = usePathname();
+  const currentUser = useCurrentUser();
 
   const sidebarContent = (
     <Box
@@ -119,14 +120,14 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
               fontSize: 12,
             }}
           >
-            {CURRENT_USER.firstName.charAt(0)}
-            {CURRENT_USER.lastName.charAt(0)}
+            {currentUser?.firstName?.charAt(0) ?? "?"}
+            {currentUser?.lastName?.charAt(0) ?? ""}
           </Box>
           {isOpen && (
             <>
               <Box sx={{ flex: 1, minWidth: 0, height: 32 }}>
                 <Typography variant="caption" color="text.primary " sx={{ textTransform: "capitalize" }}>
-                  {CURRENT_USER.role.replace("_", " ").toLowerCase()}
+                  {currentUser?.role?.replace("_", " ").toLowerCase() ?? "user"}
                 </Typography>
               </Box>
               <ChevronRight fontSize="small" />
