@@ -43,7 +43,7 @@ export default function DashboardContent({ allAppointments, stats, doctors, clin
           <Stack spacing={3}>
             <AvailableDoctors doctors={availableDoctors} clinics={clinics} />
 
-            <DoctorsRecentActivity recentActivity={recentActivity} />
+            {currentUser?.role === "DOCTOR" && <DoctorsRecentActivity recentActivity={recentActivity} />}
           </Stack>
         </Grid>
       </Grid>

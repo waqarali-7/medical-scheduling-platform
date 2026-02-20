@@ -43,14 +43,12 @@ const APPOINTMENT_TYPES: { value: AppointmentType; label: string; desc: string }
 const STEP_LABELS = ["Select Doctor", "Choose Date & Time", "Details", "Review & Confirm"];
 
 const getAvailableDates = (): string[] => {
-  const dates = [];
+  const dates: string[] = [];
   const today = new Date();
   for (let i = 1; i <= 14; i++) {
     const d = new Date(today);
     d.setDate(today.getDate() + i);
-    if (d.getDay() !== 0) {
-      dates.push(d.toISOString().split("T")[0]);
-    }
+    if (d.getDay() !== 0) dates.push(d.toISOString().split("T")[0]);
   }
   return dates.slice(0, 7);
 };
@@ -73,6 +71,7 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const availableDates = getAvailableDates();
+
   const filteredDoctors = doctors.filter((d) =>
     searchSpec
       ? d.specialization.toLowerCase().includes(searchSpec.toLowerCase()) ||
@@ -87,14 +86,11 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
 
   const handleSubmit = () => {
     setIsSubmitting(true);
-    setTimeout(() => {
-      router.push("/appointments?booked=true");
-    }, 1500);
+    setTimeout(() => router.push("/appointments?booked=true"), 1500);
   };
 
   const clinic = selectedDoctor ? clinics.find((c) => c.id === selectedDoctor.clinicId) : null;
 
-  // Generate dummy slots
   const dummySlots: TimeSlot[] = [
     "09:00",
     "09:30",
@@ -117,14 +113,14 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
   }));
 
   return (
-    <Box sx={{ maxWidth: 1000, mx: "auto", py: 3 }}>
+    <Box sx={{ maxWidth: 1400, mx: "auto", py: 3 }}>
       {/* Header */}
       <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 4 }}>
-        <IconButton component={Link} href="/appointments" color="default">
+        <IconButton component={Link} href="/appointments">
           <ArrowBack />
         </IconButton>
         <Box>
-          <Typography variant="h4" fontWeight={700}>
+          <Typography variant="h4" fontWeight={700} color="text.primary">
             Book an Appointment
           </Typography>
           <Typography variant="body2" color="text.secondary">
@@ -146,7 +142,7 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
 
       {/* Step Content */}
       <Card sx={{ mb: 3 }}>
-        {/* Step 1: Select Doctor */}
+        {/* ── Step 1: Select Doctor ───────────────────────────────────────── */}
         {step === 0 && (
           <Stack spacing={3}>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -155,21 +151,30 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                 Choose a Doctor
               </Typography>
             </Stack>
+
             <TextField
               fullWidth
               placeholder="Search by specialization or name..."
               value={searchSpec}
               onChange={(e) => setSearchSpec(e.target.value)}
               size="small"
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
             />
-            <Box sx={{ maxHeight: 480, overflow: "auto" }}>
-              <Grid container spacing={2}>
+
+            <Box sx={{ maxHeight: 500, overflow: "auto" }}>
+              <Grid container spacing={2} sx={{ pb: 1 }}>
                 {filteredDoctors.map((doc) => {
                   const isSelected = selectedDoctor?.id === doc.id;
                   const docClinic = clinics.find((c) => c.id === doc.clinicId);
                   return (
-                    <Grid size={{ xs: 12, sm: 6 }} key={doc.id}>
+                    <Grid
+                      sx={{
+                        cursor: doc.isAvailable ? "pointer" : "not-allowed",
+                        opacity: doc.isAvailable ? 1 : 0.7,
+                        pointerEvents: doc.isAvailable ? "auto" : "none",
+                      }}
+                      size={{ xs: 12, sm: 6 }}
+                      key={doc.id}
+                    >
                       <Paper
                         onClick={() => setSelectedDoctor(doc)}
                         sx={{
@@ -178,23 +183,31 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                           border: 2,
                           borderColor: isSelected ? "primary.main" : "divider",
                           bgcolor: isSelected ? "primary.lighter" : "background.paper",
-                          transition: "all 0.2s",
+                          transition: "border-color 0.2s, background-color 0.2s",
                           "&:hover": {
                             borderColor: "primary.light",
-                            bgcolor: isSelected ? "primary.lighter" : "grey.50",
+                            bgcolor: isSelected ? "primary.lighter" : "action.hover",
                           },
                         }}
                       >
                         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1.5 }}>
                           <Avatar src={doc.avatarUrl} firstName={doc.firstName} lastName={doc.lastName} size="md" />
                           <Box flex={1} minWidth={0}>
-                            <Typography variant="body2" fontWeight={600} noWrap>
+                            <Typography variant="body2" fontWeight={600} noWrap color="text.primary">
                               {doc.firstName} {doc.lastName}
                             </Typography>
-                            <Typography variant="caption" color="primary" fontWeight={500}>
+                            <Typography variant="caption" color="primary.main" fontWeight={500}>
                               {doc.specialization}
                             </Typography>
                           </Box>
+                          {!doc.isAvailable && (
+                            <Chip
+                              label="Not accepting new patients"
+                              size="small"
+                              color="warning"
+                              sx={{ mt: 1, fontSize: "0.65rem" }}
+                            />
+                          )}
                           {isSelected && (
                             <Box
                               sx={{
@@ -207,37 +220,35 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                                 justifyContent: "center",
                               }}
                             >
-                              <Check sx={{ fontSize: 16, color: "white" }} />
+                              <Check sx={{ fontSize: 16, color: "primary.contrastText" }} />
                             </Box>
                           )}
                         </Stack>
+
                         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
                           <Stack direction="row" spacing={0.5} alignItems="center">
                             <Star sx={{ fontSize: 14, color: "warning.main" }} />
-                            <Typography variant="caption">
+                            <Typography variant="caption" color="text.secondary">
                               {doc.rating} ({doc.reviewCount})
                             </Typography>
                           </Stack>
-                          <Typography variant="caption" fontWeight={600}>
+                          <Typography variant="caption" fontWeight={600} color="text.primary">
                             {formatCurrency(doc.consultationFee)}
                           </Typography>
                         </Stack>
-                        <Typography variant="caption" color="text.secondary" display="block" noWrap>
-                          <LocationOn sx={{ fontSize: 12, mr: 0.5 }} />
-                          {docClinic?.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary" display="block" noWrap>
-                          <Language sx={{ fontSize: 12, mr: 0.5 }} />
-                          {doc.languages.join(", ")}
-                        </Typography>
-                        {!doc.isAvailable && (
-                          <Chip
-                            label="Not accepting new patients"
-                            size="small"
-                            color="warning"
-                            sx={{ mt: 1, fontSize: "0.65rem" }}
-                          />
-                        )}
+
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          <LocationOn sx={{ fontSize: 12, color: "text.disabled" }} />
+                          <Typography variant="caption" color="text.secondary" noWrap>
+                            {docClinic?.name}
+                          </Typography>
+                        </Stack>
+                        <Stack direction="row" spacing={0.5} alignItems="center">
+                          <Language sx={{ fontSize: 12, color: "text.disabled" }} />
+                          <Typography variant="caption" color="text.secondary" noWrap>
+                            {doc.languages.join(", ")}
+                          </Typography>
+                        </Stack>
                       </Paper>
                     </Grid>
                   );
@@ -247,7 +258,7 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
           </Stack>
         )}
 
-        {/* Step 2: Date & Time */}
+        {/* ── Step 2: Date & Time ─────────────────────────────────────────── */}
         {step === 1 && (
           <Stack spacing={3}>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -258,7 +269,7 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
             </Stack>
 
             {selectedDoctor && (
-              <Paper sx={{ p: 2, bgcolor: "primary.lighter" }}>
+              <Paper sx={{ p: 2, bgcolor: "primary.lighter", border: 1, borderColor: "primary.light" }}>
                 <Stack direction="row" spacing={2} alignItems="center">
                   <Avatar
                     src={selectedDoctor.avatarUrl}
@@ -300,21 +311,25 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                           border: 2,
                           borderColor: isSelected ? "primary.main" : "divider",
                           bgcolor: isSelected ? "primary.main" : "background.paper",
-                          color: isSelected ? "white" : "text.primary",
-                          transition: "all 0.2s",
+                          transition: "border-color 0.2s, background-color 0.2s",
                           "&:hover": {
                             borderColor: "primary.light",
-                            bgcolor: isSelected ? "primary.main" : "primary.lighter",
+                            bgcolor: isSelected ? "primary.main" : "action.hover",
                           },
                         }}
                       >
-                        <Typography variant="caption" sx={{ opacity: 0.8 }}>
+                        <Typography variant="caption" color={isSelected ? "primary.contrastText" : "text.secondary"}>
                           {d.toLocaleDateString("de-DE", { weekday: "short" })}
                         </Typography>
-                        <Typography variant="h6" fontWeight={700} sx={{ lineHeight: 1, my: 0.5 }}>
+                        <Typography
+                          variant="h6"
+                          fontWeight={700}
+                          color={isSelected ? "primary.contrastText" : "text.primary"}
+                          sx={{ lineHeight: 1, my: 0.5 }}
+                        >
                           {d.getDate()}
                         </Typography>
-                        <Typography variant="caption" sx={{ opacity: 0.7 }}>
+                        <Typography variant="caption" color={isSelected ? "primary.contrastText" : "text.secondary"}>
                           {d.toLocaleDateString("de-DE", { month: "short" })}
                         </Typography>
                       </Paper>
@@ -345,6 +360,7 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                     </Grid>
                   ))}
                 </Grid>
+
                 {selectedSlot && (
                   <Alert severity="success" sx={{ mt: 2 }}>
                     <Stack direction="row" spacing={1} alignItems="center">
@@ -358,7 +374,7 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
           </Stack>
         )}
 
-        {/* Step 3: Details */}
+        {/* ── Step 3: Details ─────────────────────────────────────────────── */}
         {step === 2 && (
           <Stack spacing={3}>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -386,13 +402,11 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                         border: 2,
                         borderColor: selectedType === type.value ? "primary.main" : "divider",
                         bgcolor: selectedType === type.value ? "primary.lighter" : "background.paper",
-                        transition: "all 0.2s",
-                        "&:hover": {
-                          borderColor: "primary.light",
-                        },
+                        transition: "border-color 0.2s, background-color 0.2s",
+                        "&:hover": { borderColor: "primary.light" },
                       }}
                     >
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body2" fontWeight={600} color="text.primary">
                         {type.label}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
@@ -406,25 +420,17 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
 
             <TextField
               fullWidth
-              label={
-                <>
-                  Reason for Visit{" "}
-                  <Box component="span" color="error.main">
-                    *
-                  </Box>
-                </>
-              }
+              label="Reason for Visit *"
               multiline
               rows={3}
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Briefly describe your symptoms or reason for the appointment..."
               helperText={
-                <Typography variant="caption" color={reason.length < 10 ? "error" : "text.secondary"}>
+                <Typography component="span" variant="caption" color={reason.length < 10 ? "error" : "text.secondary"}>
                   {reason.length} characters (minimum 10)
                 </Typography>
               }
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
             />
 
             <TextField
@@ -435,12 +441,11 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any medications, allergies, or other information for the doctor..."
-              sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
             />
           </Stack>
         )}
 
-        {/* Step 4: Review */}
+        {/* ── Step 4: Review ──────────────────────────────────────────────── */}
         {step === 3 && selectedDoctor && (
           <Stack spacing={3}>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -453,15 +458,16 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
             <Paper
               sx={{
                 p: 3,
-                background: "linear-gradient(135deg, #f0f9ff 0%, #f0fdfa 100%)",
                 border: 1,
                 borderColor: "primary.light",
+                bgcolor: "primary.lighter",
               }}
             >
               <Typography
                 variant="caption"
                 fontWeight={700}
-                sx={{ textTransform: "uppercase", color: "primary.dark", mb: 2, display: "block" }}
+                color="primary.dark"
+                sx={{ textTransform: "uppercase", mb: 2, display: "block" }}
               >
                 Appointment Summary
               </Typography>
@@ -474,17 +480,19 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                   size="lg"
                 />
                 <Box>
-                  <Typography variant="body1" fontWeight={700}>
+                  <Typography variant="body1" fontWeight={700} color="text.primary">
                     {selectedDoctor.firstName} {selectedDoctor.lastName}
                   </Typography>
-                  <Typography variant="body2" color="primary">
+                  <Typography variant="body2" color="primary.main">
                     {selectedDoctor.specialization}
                   </Typography>
                   {clinic && (
-                    <Typography variant="caption" color="text.secondary">
-                      <LocationOn sx={{ fontSize: 12, mr: 0.5 }} />
-                      {clinic.name}, {clinic.address.city}
-                    </Typography>
+                    <Stack direction="row" spacing={0.5} alignItems="center">
+                      <LocationOn sx={{ fontSize: 12, color: "text.disabled" }} />
+                      <Typography variant="caption" color="text.secondary">
+                        {clinic.name}, {clinic.address.city}
+                      </Typography>
+                    </Stack>
                   )}
                 </Box>
               </Stack>
@@ -506,11 +514,11 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                   { label: "Fee", value: formatCurrency(selectedDoctor.consultationFee) },
                 ].map((item) => (
                   <Grid size={{ xs: 6 }} key={item.label}>
-                    <Paper sx={{ p: 1.5, bgcolor: "white" }}>
+                    <Paper sx={{ p: 1.5, bgcolor: "background.paper" }}>
                       <Typography variant="caption" color="text.secondary">
                         {item.label}
                       </Typography>
-                      <Typography variant="body2" fontWeight={600}>
+                      <Typography variant="body2" fontWeight={600} color="text.primary">
                         {item.value}
                       </Typography>
                     </Paper>
@@ -518,11 +526,13 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
                 ))}
               </Grid>
 
-              <Paper sx={{ p: 1.5, bgcolor: "white" }}>
+              <Paper sx={{ p: 1.5, bgcolor: "background.paper" }}>
                 <Typography variant="caption" color="text.secondary">
                   Reason
                 </Typography>
-                <Typography variant="body2">{reason}</Typography>
+                <Typography variant="body2" color="text.primary">
+                  {reason}
+                </Typography>
               </Paper>
             </Paper>
 
@@ -561,8 +571,8 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
             onClick={handleSubmit}
             disabled={isSubmitting}
             variant="primary"
+            color="success"
             startIcon={isSubmitting ? null : <Check />}
-            sx={{ bgcolor: "success.main", "&:hover": { bgcolor: "success.dark" } }}
           >
             {isSubmitting ? "Booking..." : "Confirm Booking"}
           </Button>

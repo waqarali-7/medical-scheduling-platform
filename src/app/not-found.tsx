@@ -1,36 +1,38 @@
+"use client";
+
+import { Box, Typography } from "@mui/material";
+import { SentimentDissatisfied } from "@mui/icons-material";
+import { Button } from "@/components/ui";
 import Link from "next/link";
 
 export default function Custom404() {
   return (
-    <div
-      style={{
+    <Box
+      sx={{
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         minHeight: "100vh",
         textAlign: "center",
-        padding: "1rem 2rem",
+        px: 4,
+        py: 2,
+        gap: 2,
       }}
     >
-      <h1 style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>404</h1>
-      <p style={{ fontSize: "1.25rem", marginBottom: "1.5rem", color: "#666" }}>
+      <SentimentDissatisfied sx={{ fontSize: 64, color: "text.disabled" }} />
+
+      <Typography variant="h1" fontWeight={700} color="text.primary">
+        404
+      </Typography>
+
+      <Typography variant="h6" color="text.secondary">
         Oops! Page not found.
-      </p>
-      <Link
-        href="/dashboard"
-        style={{
-          display: "inline-block",
-          padding: "0.5rem 1.25rem",
-          backgroundColor: "#0ea5e9",
-          color: "white",
-          borderRadius: "8px",
-          fontWeight: 600,
-          textDecoration: "none",
-        }}
-      >
+      </Typography>
+
+      <Button component={Link} href="/dashboard" variant="primary">
         Go to Dashboard
-      </Link>
-    </div>
+      </Button>
+    </Box>
   );
 }

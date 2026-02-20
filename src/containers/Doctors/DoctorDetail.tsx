@@ -11,6 +11,7 @@ import PracticeLocation from "@/components/doctors/PracticeLocation";
 import Languages from "@/components/doctors/Languages";
 import QuickBook from "@/components/doctors/QuickBook";
 import DoctorAvailability from "@/components/doctors/DoctorAvailability";
+import { useCurrentUser } from "@/context/CurrentUserContext";
 
 interface DoctorDetailPageProps {
   doctor: Doctor & { clinic?: Clinic };
@@ -19,6 +20,7 @@ interface DoctorDetailPageProps {
 
 export default function DoctorDetailPage({ doctor, appointments }: DoctorDetailPageProps) {
   const clinic = doctor.clinic;
+  const currentUser = useCurrentUser();
 
   return (
     <Box sx={{ maxWidth: 1400, mx: "auto", py: 4, px: 2 }}>
@@ -44,7 +46,7 @@ export default function DoctorDetailPage({ doctor, appointments }: DoctorDetailP
 
           <DoctorAvailability doctor={doctor} />
 
-          <QuickBook doctor={doctor} />
+          {currentUser?.role === "PATIENT" && <QuickBook doctor={doctor} />}
         </Stack>
       </Stack>
     </Box>

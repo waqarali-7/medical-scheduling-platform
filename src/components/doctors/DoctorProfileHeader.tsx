@@ -4,8 +4,10 @@ import { CalendarMonth } from "@mui/icons-material";
 import { Paper, Box, Stack, Typography, Chip, Button } from "@mui/material";
 import Link from "next/link";
 import { renderStars } from "@/components/ui/Stars";
+import { useCurrentUser } from "@/context/CurrentUserContext";
 
 export default function DoctorProfileHeader({ doctor }: { doctor: Doctor }) {
+  const currentUser = useCurrentUser();
   return (
     <Paper sx={{ position: "relative", pb: 3, mb: 4 }}>
       <Box sx={{ height: 120 }} />
@@ -65,11 +67,13 @@ export default function DoctorProfileHeader({ doctor }: { doctor: Doctor }) {
           <Typography variant="h6" fontWeight={700}>
             {formatCurrency(doctor.consultationFee)}
           </Typography>
-          <Link href={`/appointments/new?doctor=${doctor.id}`} passHref>
-            <Button variant="contained" startIcon={<CalendarMonth />} color="primary" size="medium">
-              Book Appointment
-            </Button>
-          </Link>
+          {currentUser?.role === "PATIENT" && (
+            <Link href={`/appointments/new?doctor=${doctor.id}`} passHref>
+              <Button variant="contained" startIcon={<CalendarMonth />} color="primary" size="medium">
+                Book Appointment
+              </Button>
+            </Link>
+          )}
         </Stack>
       </Stack>
     </Paper>

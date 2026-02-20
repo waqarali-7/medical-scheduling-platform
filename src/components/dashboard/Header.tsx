@@ -28,9 +28,11 @@ export default function Header({ currentUser, stats }: HeaderProps) {
           today. {stats.pendingAppointments > 0 && <span>{stats.pendingAppointments} pending confirmation.</span>}
         </Typography>
         <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-          <Button component={NextLink} href="/appointments/new" variant="primary" startIcon={<Add />}>
-            Book Appointment
-          </Button>
+          {currentUser?.role === "PATIENT" && (
+            <Button component={NextLink} href="/appointments/new" variant="primary" startIcon={<Add />}>
+              Book Appointment
+            </Button>
+          )}
           <Button
             component={NextLink}
             href="/appointments"

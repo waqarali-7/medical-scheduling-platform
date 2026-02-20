@@ -1,12 +1,20 @@
 "use client";
+
 import Link from "next/link";
+import { Box, Typography, Chip, Divider as MuiDivider } from "@mui/material";
+import {
+  Star as StarIcon,
+  LocationOn as LocationOnIcon,
+  Public as PublicIcon,
+  AccessTime as AccessTimeIcon,
+  ChevronRight as ChevronRightIcon,
+  FiberManualRecord as DotIcon,
+} from "@mui/icons-material";
 import Avatar from "@/components/ui/Avatar";
 import Card from "@/components/ui/Card";
-import Divider from "@/components/ui/Divider";
 import IconButton from "@/components/ui/IconButton";
-import type {Doctor, Clinic} from "@/types";
-import {cn, formatCurrency} from "@/lib/utils";
-import {Star as StarIcon, LocationOn as LocationOnIcon, Public as PublicIcon, AccessTime as AccessTimeIcon, ChevronRight as ChevronRightIcon} from "@mui/icons-material";
+import type { Doctor, Clinic } from "@/types";
+import { formatCurrency } from "@/lib/utils";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -18,41 +26,61 @@ export default function DoctorCard({ doctor, clinics = [], compact = false }: Do
   const clinic = clinics.find((c) => c.id === doctor.clinicId);
 
   return (
-    <Link href={`/doctors/${doctor.id}`} style={{textDecoration: "none"}}>
-      <Card className="p-5 rounded-2xl border border-gray-100 hover:shadow-md hover:border-sky-200 transition-all duration-200 cursor-pointer group">
-        <div className="flex items-start gap-4">
-          <Avatar src={doctor.avatarUrl} firstName={doctor.firstName.replace("Dr. ", "")} lastName={doctor.lastName} size="lg" />
+    <Link href={`/doctors/${doctor.id}`} style={{ textDecoration: "none" }}>
+      <Card
+        sx={{
+          p: 2,
+        }}
+      >
+        {/* Top row: avatar + info */}
+        <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
+          <Avatar
+            src={doctor.avatarUrl}
+            firstName={doctor.firstName.replace("Dr. ", "")}
+            lastName={doctor.lastName}
+            size="lg"
+          />
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3 className="font-semibold text-gray-900 text-sm">
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            {/* Name + rating */}
+            <Box sx={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: 1 }}>
+              <Box>
+                <Typography variant="body2" fontWeight={600} color="text.primary">
                   {doctor.firstName} {doctor.lastName}
-                </h3>
-                <p className="text-xs text-sky-600 font-medium mt-0.5">{doctor.specialization}</p>
-              </div>
-              <div className="flex items-center gap-1 flex-shrink-0">
-                <StarIcon className="h-4 w-4 text-amber-400" />
-                <span className="text-sm font-semibold text-gray-700">{doctor.rating.toFixed(1)}</span>
-                <span className="text-xs text-gray-400">({doctor.reviewCount})</span>
-              </div>
-            </div>
+                </Typography>
+                <Typography variant="caption" color="primary.main" fontWeight={500} sx={{ mt: 0.25, display: "block" }}>
+                  {doctor.specialization}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
+                <StarIcon sx={{ fontSize: 16, color: "warning.main" }} />
+                <Typography variant="body2" fontWeight={600} color="text.primary">
+                  {doctor.rating.toFixed(1)}
+                </Typography>
+                <Typography variant="caption" color="text.disabled">
+                  ({doctor.reviewCount})
+                </Typography>
+              </Box>
+            </Box>
 
             {!compact && (
-              <>
-                <div className="flex items-center gap-1.5 mt-2 text-xs text-gray-500">
-                  <LocationOnIcon className="h-4 w-4 text-gray-400" />
-                  <span className="truncate">
+              <Box sx={{ mt: 1, display: "flex", flexDirection: "column", gap: 0.5 }}>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                  <LocationOnIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <Typography variant="caption" color="text.secondary" noWrap>
                     {clinic?.name}, {clinic?.address.city}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500">
-                  <PublicIcon className="h-4 w-4 text-gray-400" />
-                  <span>{doctor.languages.join(", ")}</span>
-                </div>
-                <div className="flex items-center gap-1.5 mt-1 text-xs text-gray-500">
-                  <AccessTimeIcon className="h-4 w-4 text-gray-400" />
-                  <span>
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                  <PublicIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <Typography variant="caption" color="text.secondary">
+                    {doctor.languages.join(", ")}
+                  </Typography>
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                  <AccessTimeIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <Typography variant="caption" color="text.secondary">
                     Next:{" "}
                     {doctor.nextAvailableSlot
                       ? new Date(doctor.nextAvailableSlot).toLocaleDateString("de-DE", {
@@ -60,33 +88,50 @@ export default function DoctorCard({ doctor, clinics = [], compact = false }: Do
                           month: "short",
                         })
                       : "Not available"}
-                  </span>
-                </div>
-              </>
+                  </Typography>
+                </Box>
+              </Box>
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
         {!compact && (
           <>
-            <Divider className="my-4 border-gray-50" />
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-gray-400">Consultation fee</p>
-                <p className="text-sm font-semibold text-gray-800">{formatCurrency(doctor.consultationFee)}</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span
-                  className={cn("inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full", doctor.isAvailable ? "bg-emerald-50 text-emerald-600" : "bg-gray-100 text-gray-500")}
-                >
-                  <span className={cn("h-1.5 w-1.5 rounded-full", doctor.isAvailable ? "bg-emerald-500" : "bg-gray-400")} />
-                  {doctor.isAvailable ? "Available" : "Unavailable"}
-                </span>
-                <IconButton>
-                  <ChevronRightIcon className="h-4 w-4 text-gray-300 group-hover:text-gray-500 transition-colors" />
+            <MuiDivider sx={{ my: 2 }} />
+            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+              <Box>
+                <Typography variant="caption" color="text.disabled">
+                  Consultation fee
+                </Typography>
+                <Typography variant="body2" fontWeight={600} color="text.primary">
+                  {formatCurrency(doctor.consultationFee)}
+                </Typography>
+              </Box>
+
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                <Chip
+                  size="small"
+                  icon={
+                    <DotIcon
+                      sx={{
+                        fontSize: "8px !important",
+                        color: doctor.isAvailable ? "success.main" : "text.disabled",
+                      }}
+                    />
+                  }
+                  label={doctor.isAvailable ? "Available" : "Unavailable"}
+                  sx={{
+                    bgcolor: doctor.isAvailable ? "success.lighter" : "action.hover",
+                    color: doctor.isAvailable ? "success.main" : "text.secondary",
+                    fontWeight: 500,
+                    "& .MuiChip-icon": { ml: 0.75 },
+                  }}
+                />
+                <IconButton size="small">
+                  <ChevronRightIcon sx={{ fontSize: 16, color: "text.disabled" }} />
                 </IconButton>
-              </div>
-            </div>
+              </Box>
+            </Box>
           </>
         )}
       </Card>

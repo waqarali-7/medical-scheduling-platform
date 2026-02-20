@@ -7,6 +7,7 @@ import { Box, Typography, Stack, TextField, InputAdornment, MenuItem, Chip, Grid
 import AppointmentCard from "@/components/appointments/AppointmentCard";
 import { Button, Card } from "@/components/ui";
 import type { Appointment, AppointmentStatus, AppointmentType } from "@/types";
+import { useCurrentUser } from "@/context/CurrentUserContext";
 
 const STATUS_TABS: { label: string; value: AppointmentStatus | "ALL" }[] = [
   { label: "All", value: "ALL" },
@@ -35,6 +36,7 @@ export default function AppointmentsList({ initialAppointments }: AppointmentsLi
   const [activeType, setActiveType] = useState<AppointmentType | "ALL">("ALL");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"date" | "status">("date");
+  const currentUser = useCurrentUser();
 
   const all = initialAppointments;
 
@@ -88,9 +90,11 @@ export default function AppointmentsList({ initialAppointments }: AppointmentsLi
             {all.length} total appointments · {counts["CONFIRMED"] || 0} confirmed
           </Typography>
         </Box>
-        <Button component={Link} href="/appointments/new" variant="primary" startIcon={<Add />}>
-          New Appointment
-        </Button>
+        {currentUser?.role === "PATIENT" && (
+          <Button component={Link} href="/appointments/new" variant="primary" startIcon={<Add />}>
+            New Appointment
+          </Button>
+        )}
       </Stack>
 
       <Card sx={{ mb: 3, p: 2 }}>

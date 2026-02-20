@@ -25,7 +25,7 @@ export default function AppointmentCard({ appointment, view = "patient", compact
 
   return (
     <Link href={`/appointments/${appointment.id}`} style={{ textDecoration: "none" }}>
-      <Card sx={{ p: 2, mb: 2, cursor: "pointer", "&:hover": { boxShadow: 3 } }}>
+      <Card sx={{ p: 2, mb: 2, cursor: "pointer" }}>
         <Stack direction="row" spacing={2} alignItems="flex-start">
           {/* Left: Date */}
           <Box sx={{ width: 56, textAlign: "center", flexShrink: 0 }}>

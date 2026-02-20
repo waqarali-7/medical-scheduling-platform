@@ -12,24 +12,23 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProviderWrapper({ children }: { children: ReactNode }) {
-  // Lazy initializer avoids calling setState in effect
   const [mode, setMode] = useState<ThemeMode>(() => {
-    if (typeof window !== "undefined") {
-      // Read saved mode
-      const saved = localStorage.getItem("theme-mode") as ThemeMode | null;
-      if (saved) return saved;
+    if (typeof window === "undefined") return "light";
 
-      // Fallback to system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      return prefersDark ? "dark" : "light";
+    const saved = localStorage.getItem("theme-mode") as ThemeMode | null;
+
+    if (saved === "light" || saved === "dark") {
+      return saved;
     }
-    return "light"; // default for SSR
+
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    return prefersDark ? "dark" : "light";
   });
 
   const toggleMode = () => {
     setMode((prev) => {
       const next = prev === "light" ? "dark" : "light";
-      if (typeof window !== "undefined") localStorage.setItem("theme-mode", next);
+      localStorage.setItem("theme-mode", next);
       return next;
     });
   };

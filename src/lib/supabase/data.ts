@@ -1,7 +1,8 @@
 /**
  * Supabase data layer: fetch and map DB rows to app types (camelCase).
- * Use from Server Components or server context only (createClient from server).
+ * Server-only. Requires async createClient() (Next 15 compatible).
  */
+
 import { createClient } from "@/lib/supabase/server";
 import type {
   Appointment,
@@ -11,9 +12,13 @@ import type {
   User,
   DashboardStats,
   AppointmentStatus,
+  ClinicAdmin,
 } from "@/types";
 
-// ─── Raw row types (snake_case from DB) ──────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   Raw DB Row Types (snake_case)
+──────────────────────────────────────────────────────────────────────────── */
+
 type ClinicRow = {
   id: string;
   name: string;
@@ -75,7 +80,10 @@ type AppointmentRow = {
   clinic?: ClinicRow;
 };
 
-// ─── Mappers: DB row → app type ──────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   MAPPERS
+──────────────────────────────────────────────────────────────────────────── */
+
 function mapClinicRow(r: ClinicRow): Clinic {
   return {
     id: r.id,
@@ -103,6 +111,7 @@ function mapProfileRowToUser(r: ProfileRow): User {
     avatarUrl: r.avatar_url ?? undefined,
     createdAt: r.created_at,
   };
+
   if (r.role === "PATIENT") {
     return {
       ...base,
@@ -113,6 +122,7 @@ function mapProfileRowToUser(r: ProfileRow): User {
       medicalHistory: r.medical_history ?? undefined,
     } as Patient;
   }
+
   if (r.role === "DOCTOR") {
     return {
       ...base,
@@ -120,24 +130,25 @@ function mapProfileRowToUser(r: ProfileRow): User {
       specialization: r.specialization ?? "",
       qualifications: r.qualifications ?? [],
       clinicId: r.clinic_id ?? "",
-      rating: Number(r.rating) ?? 0,
+      rating: Number(r.rating) || 0,
       reviewCount: r.review_count ?? 0,
       bio: r.bio ?? "",
       languages: r.languages ?? [],
-      consultationFee: Number(r.consultation_fee) ?? 0,
+      consultationFee: Number(r.consultation_fee) || 0,
       isAvailable: r.is_available ?? true,
       nextAvailableSlot: r.next_available_slot ?? undefined,
     } as Doctor;
   }
+
   return {
     ...base,
     role: "CLINIC_ADMIN",
     clinicId: r.clinic_id ?? "",
-  } as import("@/types").ClinicAdmin;
+  } as ClinicAdmin;
 }
 
 function mapAppointmentRow(row: AppointmentRow): Appointment {
-  const apt: Appointment = {
+  const appointment: Appointment = {
     id: row.id,
     patientId: row.patient_id,
     doctorId: row.doctor_id,
@@ -152,120 +163,234 @@ function mapAppointmentRow(row: AppointmentRow): Appointment {
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
-  if (row.patient) apt.patient = mapProfileRowToUser(row.patient) as Patient;
-  if (row.doctor) apt.doctor = mapProfileRowToUser(row.doctor) as Doctor;
-  if (row.clinic) apt.clinic = mapClinicRow(row.clinic);
-  return apt;
+
+  if (row.patient) appointment.patient = mapProfileRowToUser(row.patient) as Patient;
+  if (row.doctor) appointment.doctor = mapProfileRowToUser(row.doctor) as Doctor;
+  if (row.clinic) appointment.clinic = mapClinicRow(row.clinic);
+
+  return appointment;
 }
 
-// ─── Public API (server-only) ────────────────────────────────────────────────
+/* ────────────────────────────────────────────────────────────────────────────
+   HELPER FUNCTIONS
+──────────────────────────────────────────────────────────────────────────── */
+
+async function getCurrentUserProfile(supabase: Awaited<ReturnType<typeof createClient>>): Promise<User | null> {
+  const {
+    data: { user: authUser },
+  } = await supabase.auth.getUser();
+
+  if (!authUser) return null;
+
+  const { data: profile, error } = await supabase.from("profiles").select("*").eq("id", authUser.id).single();
+
+  if (error || !profile) return null;
+
+  return mapProfileRowToUser(profile as ProfileRow);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   PUBLIC API (ALL async createClient FIXED)
+──────────────────────────────────────────────────────────────────────────── */
 
 export async function getClinics(): Promise<Clinic[]> {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data, error } = await supabase.from("clinics").select("*").order("name");
+
   if (error) throw new Error(error.message);
-  return (data || []).map(mapClinicRow);
+
+  return (data ?? []).map(mapClinicRow);
 }
 
-export async function getDoctors(): Promise<Doctor[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("role", "DOCTOR")
-    .order("last_name");
+export async function getDoctors(clinicId?: string): Promise<Doctor[]> {
+  const supabase = await createClient();
+
+  let query = supabase.from("profiles").select("*").eq("role", "DOCTOR").order("last_name");
+
+  if (clinicId) {
+    query = query.eq("clinic_id", clinicId);
+  }
+
+  const { data, error } = await query;
+
   if (error) throw new Error(error.message);
-  return (data || []).map((r) => mapProfileRowToUser(r as ProfileRow) as Doctor);
+
+  return (data ?? []).map((r) => mapProfileRowToUser(r as ProfileRow) as Doctor);
 }
 
 export async function getDoctorById(id: string): Promise<(Doctor & { clinic?: Clinic }) | null> {
-  const supabase = createClient();
+  const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("profiles")
     .select("*, clinic:clinics!clinic_id(*)")
     .eq("id", id)
     .eq("role", "DOCTOR")
     .single();
+
   if (error || !data) return null;
+
   const row = data as ProfileRow & { clinic?: ClinicRow };
   const doctor = mapProfileRowToUser(row) as Doctor;
+
   if (row.clinic) {
     (doctor as Doctor & { clinic?: Clinic }).clinic = mapClinicRow(row.clinic);
   }
+
   return doctor as Doctor & { clinic?: Clinic };
 }
 
 export async function getHydratedAppointments(): Promise<Appointment[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  let query = supabase
     .from("appointments")
-    .select(
-      "*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)"
-    )
-    .order("scheduled_at", { ascending: true });
+    .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)");
+
+  // Role-based filtering
+  if (currentUser.role === "PATIENT") {
+    query = query.eq("patient_id", currentUser.id);
+  } else if (currentUser.role === "DOCTOR") {
+    query = query.eq("doctor_id", currentUser.id);
+  } else if (currentUser.role === "CLINIC_ADMIN") {
+    // Clinic admins can see appointments for their clinic
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    if (clinicId) {
+      query = query.eq("clinic_id", clinicId);
+    }
+  }
+
+  const { data, error } = await query.order("scheduled_at", { ascending: true });
+
   if (error) throw new Error(error.message);
-  return (data || []).map((r) => mapAppointmentRow(r as AppointmentRow));
+
+  return (data ?? []).map((r) => mapAppointmentRow(r as AppointmentRow));
 }
 
 export async function getAppointmentById(id: string): Promise<Appointment | null> {
-  const supabase = createClient();
-  const { data, error } = await supabase
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  let query = supabase
     .from("appointments")
-    .select(
-      "*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)"
-    )
-    .eq("id", id)
-    .single();
+    .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)")
+    .eq("id", id);
+
+  // Role-based filtering
+  if (currentUser.role === "PATIENT") {
+    query = query.eq("patient_id", currentUser.id);
+  } else if (currentUser.role === "DOCTOR") {
+    query = query.eq("doctor_id", currentUser.id);
+  } else if (currentUser.role === "CLINIC_ADMIN") {
+    // Clinic admins can see appointments for their clinic
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    if (clinicId) {
+      query = query.eq("clinic_id", clinicId);
+    }
+  }
+
+  const { data, error } = await query.single();
+
   if (error || !data) return null;
+
   return mapAppointmentRow(data as AppointmentRow);
 }
 
-/** Demo: first patient in DB. Replace with auth user when you add Supabase Auth. */
+/* ────────────────────────────────────────────────────────────────────────────
+   AUTH INTEGRATION
+──────────────────────────────────────────────────────────────────────────── */
+
 export async function getCurrentUser(): Promise<User | null> {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("profiles")
-    .select("*")
-    .eq("role", "PATIENT")
-    .limit(1)
-    .single();
-  if (error || !data) return null;
-  return mapProfileRowToUser(data as ProfileRow);
+  const supabase = await createClient();
+  return getCurrentUserProfile(supabase);
 }
 
+/* ────────────────────────────────────────────────────────────────────────────
+   DASHBOARD STATS (Role-based)
+──────────────────────────────────────────────────────────────────────────── */
+
 export async function getDashboardStats(): Promise<DashboardStats> {
-  const supabase = createClient();
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
   const todayStart = new Date();
   todayStart.setHours(0, 0, 0, 0);
   const todayEnd = new Date(todayStart);
   todayEnd.setDate(todayEnd.getDate() + 1);
 
-  const [appointmentsRes, profilesRes] = await Promise.all([
-    supabase.from("appointments").select("id, status, scheduled_at"),
-    supabase.from("profiles").select("id, role"),
-  ]);
+  // Base queries
+  let appointmentsQuery = supabase.from("appointments").select("id, status, scheduled_at");
+  const profilesQuery = supabase.from("profiles").select("id, role");
 
-  const appointments = appointmentsRes.data || [];
-  const profiles = profilesRes.data || [];
+  // Role-based filtering
+  if (currentUser.role === "PATIENT") {
+    appointmentsQuery = appointmentsQuery.eq("patient_id", currentUser.id);
+  } else if (currentUser.role === "DOCTOR") {
+    appointmentsQuery = appointmentsQuery.eq("doctor_id", currentUser.id);
+  } else if (currentUser.role === "CLINIC_ADMIN") {
+    // Clinic admins can see appointments for their clinic
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    if (clinicId) {
+      appointmentsQuery = appointmentsQuery.eq("clinic_id", clinicId);
+    }
+  }
 
-  const totalAppointments = appointments.length;
+  const [appointmentsRes, profilesRes] = await Promise.all([appointmentsQuery, profilesQuery]);
+
+  const appointments = appointmentsRes.data ?? [];
+  const profiles = profilesRes.data ?? [];
+
   const byStatus = appointments.reduce(
     (acc, a) => {
       acc[a.status as AppointmentStatus] = (acc[a.status as AppointmentStatus] || 0) + 1;
       return acc;
     },
-    {} as Record<AppointmentStatus, number>
+    {} as Record<AppointmentStatus, number>,
   );
+
   const todayAppointments = appointments.filter((a) => {
     const t = new Date(a.scheduled_at).getTime();
     return t >= todayStart.getTime() && t < todayEnd.getTime();
   }).length;
 
-  const totalPatients = profiles.filter((p) => p.role === "PATIENT").length;
-  const totalDoctors = profiles.filter((p) => p.role === "DOCTOR").length;
+  // Role-specific stats
+  let totalPatients = 0;
+  let totalDoctors = 0;
+
+  if (currentUser.role === "CLINIC_ADMIN") {
+    // Clinic admins see stats for their clinic only
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    if (clinicId) {
+      const clinicPatientsRes = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("role", "PATIENT")
+        .eq("clinic_id", clinicId);
+
+      const clinicDoctorsRes = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("role", "DOCTOR")
+        .eq("clinic_id", clinicId);
+
+      totalPatients = clinicPatientsRes.data?.length || 0;
+      totalDoctors = clinicDoctorsRes.data?.length || 0;
+    }
+  } else {
+    // For doctors and patients, use the general counts
+    totalPatients = profiles.filter((p) => p.role === "PATIENT").length;
+    totalDoctors = profiles.filter((p) => p.role === "DOCTOR").length;
+  }
 
   return {
-    totalAppointments,
+    totalAppointments: appointments.length,
     pendingAppointments: byStatus.PENDING ?? 0,
     confirmedAppointments: byStatus.CONFIRMED ?? 0,
     completedAppointments: byStatus.COMPLETED ?? 0,
@@ -276,4 +401,311 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     todayAppointments,
     weeklyGrowth: 0,
   };
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   ROLE-SPECIFIC DATA FETCHING
+──────────────────────────────────────────────────────────────────────────── */
+
+export async function getMyPatients(): Promise<Patient[]> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser || currentUser.role !== "DOCTOR") {
+    return [];
+  }
+
+  // Get all appointments for this doctor, then get unique patients
+  const { data: appointments, error } = await supabase
+    .from("appointments")
+    .select("patient_id")
+    .eq("doctor_id", currentUser.id);
+
+  if (error) throw new Error(error.message);
+
+  const patientIds = [...new Set(appointments?.map((a) => a.patient_id) || [])];
+
+  if (patientIds.length === 0) return [];
+
+  const { data: patients, error: patientsError } = await supabase
+    .from("profiles")
+    .select("*")
+    .in("id", patientIds)
+    .eq("role", "PATIENT");
+
+  if (patientsError) throw new Error(patientsError.message);
+
+  return (patients ?? []).map((r) => mapProfileRowToUser(r as ProfileRow) as Patient);
+}
+
+export async function getClinicAppointments(clinicId: string): Promise<Appointment[]> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Only clinic admins can access clinic-specific appointments
+  if (currentUser.role !== "CLINIC_ADMIN") {
+    throw new Error("Unauthorized access");
+  }
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)")
+    .eq("clinic_id", clinicId)
+    .order("scheduled_at", { ascending: true });
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((r) => mapAppointmentRow(r as AppointmentRow));
+}
+
+export async function getDoctorAppointments(doctorId: string): Promise<Appointment[]> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Only clinic admins can access clinic-specific appointments
+  if (currentUser.role !== "DOCTOR" && currentUser.role !== "CLINIC_ADMIN") {
+    throw new Error("Unauthorized access");
+  }
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)")
+    .eq("doctor_id", doctorId)
+    .order("scheduled_at", { ascending: true });
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((r) => mapAppointmentRow(r as AppointmentRow));
+}
+
+export async function getMyClinic(): Promise<Clinic | null> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser || currentUser.role !== "CLINIC_ADMIN") {
+    return null;
+  }
+
+  const clinicId = (currentUser as ClinicAdmin).clinicId;
+  if (!clinicId) return null;
+
+  const { data, error } = await supabase.from("clinics").select("*").eq("id", clinicId).single();
+
+  if (error) return null;
+
+  return mapClinicRow(data as ClinicRow);
+}
+
+export async function getMyUpcomingAppointments(): Promise<Appointment[]> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  const now = new Date().toISOString();
+
+  let query = supabase
+    .from("appointments")
+    .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)")
+    .gte("scheduled_at", now)
+    .order("scheduled_at", { ascending: true });
+
+  // Role-based filtering
+  if (currentUser.role === "PATIENT") {
+    query = query.eq("patient_id", currentUser.id);
+  } else if (currentUser.role === "DOCTOR") {
+    query = query.eq("doctor_id", currentUser.id);
+  } else if (currentUser.role === "CLINIC_ADMIN") {
+    // Clinic admins can see appointments for their clinic
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    if (clinicId) {
+      query = query.eq("clinic_id", clinicId);
+    }
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((r) => mapAppointmentRow(r as AppointmentRow));
+}
+
+export async function getMyPastAppointments(): Promise<Appointment[]> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  const now = new Date().toISOString();
+
+  let query = supabase
+    .from("appointments")
+    .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)")
+    .lt("scheduled_at", now)
+    .order("scheduled_at", { ascending: false });
+
+  // Role-based filtering
+  if (currentUser.role === "PATIENT") {
+    query = query.eq("patient_id", currentUser.id);
+  } else if (currentUser.role === "DOCTOR") {
+    query = query.eq("doctor_id", currentUser.id);
+  } else if (currentUser.role === "CLINIC_ADMIN") {
+    // Clinic admins can see appointments for their clinic
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    if (clinicId) {
+      query = query.eq("clinic_id", clinicId);
+    }
+  }
+
+  const { data, error } = await query;
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((r) => mapAppointmentRow(r as AppointmentRow));
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   UTILITY FUNCTIONS
+──────────────────────────────────────────────────────────────────────────── */
+
+export async function getUserRole(): Promise<User["role"] | null> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return null;
+
+  const { data, error } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+
+  if (error || !data) return null;
+
+  return data.role as User["role"];
+}
+
+export async function canAccessResource(
+  resource: "appointments" | "patients" | "doctors" | "clinics",
+): Promise<boolean> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return false;
+
+  const { data, error } = await supabase.from("profiles").select("role").eq("id", user.id).single();
+
+  if (error || !data) return false;
+
+  const role = data.role as User["role"];
+
+  // Define access rules
+  const accessRules: Record<User["role"], Record<string, boolean>> = {
+    PATIENT: {
+      appointments: true,
+      patients: false,
+      doctors: true,
+      clinics: true,
+    },
+    DOCTOR: {
+      appointments: true,
+      patients: true,
+      doctors: false,
+      clinics: true,
+    },
+    CLINIC_ADMIN: {
+      appointments: true,
+      patients: true,
+      doctors: true,
+      clinics: true,
+    },
+  };
+
+  return accessRules[role]?.[resource] || false;
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   DATA MUTATION HELPERS (Optional - for reference)
+──────────────────────────────────────────────────────────────────────────── */
+
+export async function createAppointment(appointmentData: Omit<Appointment, "id" | "createdAt" | "updatedAt">) {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Validate user has permission to create appointment
+  if (currentUser.role === "PATIENT") {
+    // Patients can only create appointments for themselves
+    if (appointmentData.patientId !== currentUser.id) {
+      throw new Error("Unauthorized: Cannot create appointment for another patient");
+    }
+  } else if (currentUser.role === "DOCTOR") {
+    // Doctors can only create appointments for themselves
+    if (appointmentData.doctorId !== currentUser.id) {
+      throw new Error("Unauthorized: Cannot create appointment for another doctor");
+    }
+  }
+
+  const { data, error } = await supabase
+    .from("appointments")
+    .insert([
+      {
+        ...appointmentData,
+        status: appointmentData.status,
+        type: appointmentData.type,
+        scheduled_at: appointmentData.scheduledAt,
+        duration_minutes: appointmentData.durationMinutes,
+        reason: appointmentData.reason,
+        notes: appointmentData.notes,
+        cancel_reason: appointmentData.cancelReason,
+      },
+    ])
+    .select();
+
+  if (error) throw new Error(error.message);
+
+  return mapAppointmentRow(data[0] as AppointmentRow);
+}
+
+export async function updateAppointmentStatus(id: string, status: AppointmentStatus) {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // First, get the appointment to check permissions
+  const { data: appointment, error: fetchError } = await supabase
+    .from("appointments")
+    .select("*")
+    .eq("id", id)
+    .single();
+
+  if (fetchError || !appointment) throw new Error("Appointment not found");
+
+  // Check if user has permission to update this appointment
+  let canUpdate = false;
+
+  if (currentUser.role === "PATIENT") {
+    canUpdate = appointment.patient_id === currentUser.id;
+  } else if (currentUser.role === "DOCTOR") {
+    canUpdate = appointment.doctor_id === currentUser.id;
+  } else if (currentUser.role === "CLINIC_ADMIN") {
+    const clinicId = (currentUser as ClinicAdmin).clinicId;
+    canUpdate = clinicId ? appointment.clinic_id === clinicId : false;
+  }
+
+  if (!canUpdate) {
+    throw new Error("Unauthorized: Cannot update this appointment");
+  }
+
+  const { data, error } = await supabase.from("appointments").update({ status }).eq("id", id).select();
+
+  if (error) throw new Error(error.message);
+
+  return mapAppointmentRow(data[0] as AppointmentRow);
 }

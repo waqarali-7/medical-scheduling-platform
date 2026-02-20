@@ -49,17 +49,19 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       )}
 
       {/* Quick Book Button */}
-      <Button
-        component={NextLink}
-        href="/appointments/new"
-        variant="primary"
-        startIcon={<AddIcon />}
-        sx={{
-          display: { xs: "none", sm: "flex" },
-        }}
-      >
-        New Appointment
-      </Button>
+      {currentUser?.role === "PATIENT" && (
+        <Button
+          component={NextLink}
+          href="/appointments/new"
+          variant="primary"
+          startIcon={<AddIcon />}
+          sx={{
+            display: { xs: "none", sm: "flex" },
+          }}
+        >
+          New Appointment
+        </Button>
+      )}
 
       {/* Search */}
       <Box

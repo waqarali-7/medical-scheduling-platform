@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   Box,
   Typography,
@@ -11,6 +13,11 @@ import {
   ListItemText,
   Tooltip,
   Drawer,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress,
 } from "@mui/material";
 import {
   Dashboard,
@@ -21,18 +28,31 @@ import {
   ChevronRight,
   MedicalServices,
   Menu,
+  Warning,
 } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
+import { createBrowserClient } from "@supabase/ssr";
 import NextLink from "../ui/Link";
 import Link from "next/link";
 import { useCurrentUser } from "@/context/CurrentUserContext";
+import { Button } from "@/components/ui";
+import { UserRole } from "@/types";
+import { ROLE_ROUTE_MAP } from "@/proxy";
 
-const NAV_ITEMS = [
+const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+
+const ALL_NAV_ITEMS = [
   { label: "Dashboard", href: "/dashboard", icon: <Dashboard /> },
   { label: "Appointments", href: "/appointments", icon: <CalendarMonth /> },
   { label: "Doctors", href: "/doctors", icon: <MedicalServices /> },
   { label: "Patients", href: "/patients", icon: <People /> },
-];
+] as const;
+
+export const NAV_ITEMS = (role: UserRole | undefined) => {
+  if (!role) return [];
+  const allowed = ROLE_ROUTE_MAP[role];
+  return ALL_NAV_ITEMS.filter((item) => allowed.includes(item.href));
+};
 
 interface SidebarProps {
   isOpen: boolean;
@@ -43,7 +63,40 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkClick }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const currentUser = useCurrentUser();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowLogoutDialog(true);
+  };
+
+  const handleLogoutConfirm = async () => {
+    setIsLoggingOut(true);
+
+    try {
+      const { error } = await supabase.auth.signOut();
+
+      if (error) {
+        alert("Failed to logout. Please try again.");
+        return;
+      }
+
+      router.push("/login");
+      router.refresh();
+    } catch (err) {
+      console.error("Logout exception:", err);
+      alert("An error occurred during logout.");
+    } finally {
+      setIsLoggingOut(false);
+      setShowLogoutDialog(false);
+    }
+  };
+
+  const handleLogoutCancel = () => {
+    setShowLogoutDialog(false);
+  };
 
   const sidebarContent = (
     <Box
@@ -126,7 +179,7 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
           {isOpen && (
             <>
               <Box sx={{ flex: 1, minWidth: 0, height: 32 }}>
-                <Typography variant="caption" color="text.primary " sx={{ textTransform: "capitalize" }}>
+                <Typography variant="caption" color="text.primary" sx={{ textTransform: "capitalize" }}>
                   {currentUser?.role?.replace("_", " ").toLowerCase() ?? "user"}
                 </Typography>
               </Box>
@@ -139,7 +192,7 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
       {/* Navigation */}
       <Box sx={{ flex: 1, overflowY: "auto", py: 2 }}>
         <List>
-          {NAV_ITEMS.map((item) => {
+          {NAV_ITEMS(currentUser?.role).map((item) => {
             const isActive = pathname === item.href || (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
             return (
@@ -186,15 +239,61 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
               </ListItemIcon>
               <ListItemText primary="Settings" />
             </ListItemButton>
-            <ListItemButton sx={{ borderRadius: 2, color: "error.main" }}>
+            <ListItemButton onClick={handleLogoutClick} sx={{ borderRadius: 2, color: "error.main" }}>
               <ListItemIcon>
-                <Logout sx={{ fontSize: 18 }} />
+                <Logout sx={{ fontSize: 18, color: "error.main" }} />
               </ListItemIcon>
               <ListItemText primary="Sign Out" />
             </ListItemButton>
           </List>
         </Box>
       )}
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={showLogoutDialog} onClose={handleLogoutCancel}>
+        <DialogTitle>
+          <Stack direction="row" spacing={2} alignItems="center">
+            <Box
+              sx={{
+                width: 48,
+                height: 48,
+                borderRadius: 2,
+                bgcolor: "error.lighter",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Warning sx={{ color: "error.main", fontSize: 28 }} />
+            </Box>
+            <Typography variant="h6" fontWeight={600}>
+              Sign Out
+            </Typography>
+          </Stack>
+        </DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" color="text.secondary">
+            Are you sure you want to sign out? You&apos;ll need to log in again to access your account.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3 }}>
+          <Button onClick={handleLogoutCancel} variant="outline" disabled={isLoggingOut}>
+            Cancel
+          </Button>
+          <Button
+            onClick={handleLogoutConfirm}
+            variant="primary"
+            disabled={isLoggingOut}
+            startIcon={isLoggingOut ? <CircularProgress size={16} color="inherit" /> : <Logout />}
+            sx={{
+              bgcolor: "error.main",
+              "&:hover": { bgcolor: "error.dark" },
+            }}
+          >
+            {isLoggingOut ? "Signing out..." : "Sign Out"}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 
