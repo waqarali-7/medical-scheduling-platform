@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Box, CssBaseline, useMediaQuery, useTheme } from "@mui/material";
+import { useSidebarState } from "@/hooks/sideBarState/useSidebarState";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
+import { Box } from "@/lib/mui";
 
 interface AppShellProps {
   children: React.ReactNode;
@@ -11,41 +11,14 @@ interface AppShellProps {
 }
 
 export default function AppShell({ children, title }: AppShellProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [mounted, setMounted] = useState(false);
-
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
-
-  // Fix hydration warning by using useEffect asynchronously
-  useEffect(() => {
-    const id = requestAnimationFrame(() => setMounted(true));
-    return () => cancelAnimationFrame(id);
-  }, []);
+  const { sidebarOpen, toggleSidebar, closeSidebar, mounted, isMobile } = useSidebarState();
 
   if (!mounted) return null;
 
-  const handleSidebarToggle = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
-
-  const handleSidebarClose = () => {
-    if (isMobile) setSidebarOpen(false);
-  };
-
   return (
     <Box sx={{ display: "flex", height: { xs: "100%", lg: "100vh" }, bgcolor: "background.default" }}>
-      <CssBaseline />
+      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} mobile={isMobile} onLinkClick={closeSidebar} />
 
-      {/* Sidebar */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        toggleSidebar={handleSidebarToggle}
-        mobile={isMobile}
-        onLinkClick={handleSidebarClose}
-      />
-
-      {/* Main content */}
       <Box
         sx={{
           flex: 1,
@@ -54,7 +27,7 @@ export default function AppShell({ children, title }: AppShellProps) {
           transition: "margin-left 0.3s",
         }}
       >
-        <Header onMenuClick={handleSidebarToggle} title={title} />
+        <Header onMenuClick={toggleSidebar} title={title} />
         <Box
           component="main"
           sx={{

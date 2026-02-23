@@ -1,0 +1,13 @@
+export { default as AboutDoctor } from "./AboutDoctor";
+export { default as AvailableDoctors } from "./AvailableDoctors";
+export { default as DoctorAvailability } from "./DoctorAvailability";
+export { default as DoctorCard } from "./DoctorCard";
+export { default as DoctorDetailHeader } from "./DoctorDetailHeader";
+export { default as DoctorFilters } from "./DoctorFilters";
+export { default as DoctorProfileHeader } from "./DoctorProfileHeader";
+export { default as DoctorsRecentActivity } from "./DoctorsRecentActivity";
+export { default as Languages } from "./Languages";
+export { default as PracticeLocation } from "./PracticeLocation";
+export { default as QuickBook } from "./QuickBook";
+export { default as Qualification } from "./Qualification";
+export { default as RecentAppointments } from "./RecentAppointments";

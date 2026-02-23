@@ -1,13 +1,11 @@
 "use client";
 
-import { Box, Grid, Stack } from "@mui/material";
+import { Box, Grid, Stack } from "@/lib/mui";
 import { useCurrentUser } from "@/context/CurrentUserContext";
-import Header from "@/components/dashboard/Header";
-import Overview from "@/components/dashboard/Overview";
-import UpcomingAppointments from "@/components/appointments/UpcomingAppointments";
-import AvailableDoctors from "@/components/doctors/AvailableDoctors";
-import DoctorsRecentActivity from "@/components/doctors/DoctorsRecentActivity";
+import { Header, Overview } from "./components";
+import { AvailableDoctors, DoctorsRecentActivity } from "@/containers/Doctors/components";
 import type { Appointment, Doctor, Clinic, DashboardStats } from "@/types";
+import { UpcomingAppointments } from "../Appointments/AppointmentsList/components/UpcomingAppointments";
 
 interface DashboardContentProps {
   allAppointments: Appointment[];

@@ -1,18 +1,16 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Box, Stack, Typography, Paper } from "@mui/material";
-import DoctorCard from "@/components/doctors/DoctorCard";
-import type { Doctor, Clinic } from "@/types";
-import DoctorDetailHeader from "@/components/doctors/DoctorDetailHeader";
-import DoctorFilters from "@/components/doctors/DoctorFilters";
+import {useState, useMemo} from "react";
+import { Box, Stack, Typography, Paper } from "@/lib/mui";
+import type {Doctor, Clinic} from "@/types";
+import {DoctorCard, DoctorDetailHeader, DoctorFilters} from "./components";
 
 interface DoctorsListPageProps {
   doctors: Doctor[];
   clinics: Clinic[];
 }
 
-export default function DoctorsListPage({ doctors, clinics }: DoctorsListPageProps) {
+export default function DoctorsListPage({doctors, clinics}: DoctorsListPageProps) {
   const [search, setSearch] = useState("");
   const [selectedSpec, setSelectedSpec] = useState("All");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
@@ -25,12 +23,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
         if (selectedSpec !== "All" && d.specialization !== selectedSpec) return false;
         if (search) {
           const q = search.toLowerCase();
-          return (
-            d.firstName.toLowerCase().includes(q) ||
-            d.lastName.toLowerCase().includes(q) ||
-            d.specialization.toLowerCase().includes(q) ||
-            d.bio?.toLowerCase().includes(q)
-          );
+          return d.firstName.toLowerCase().includes(q) || d.lastName.toLowerCase().includes(q) || d.specialization.toLowerCase().includes(q) || d.bio?.toLowerCase().includes(q);
         }
         return true;
       })
@@ -43,7 +36,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
   }, [doctors, search, selectedSpec, onlyAvailable, sortBy]);
 
   return (
-    <Box sx={{ py: 4, px: 2 }}>
+    <Box sx={{py: 4, px: 2}}>
       <DoctorDetailHeader doctors={doctors} clinics={clinics} />
 
       <DoctorFilters
@@ -57,7 +50,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
         setSortBy={setSortBy}
       />
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
         Showing <strong>{filtered.length}</strong> doctor{filtered.length !== 1 ? "s" : ""}
       </Typography>
 
@@ -68,7 +61,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
           ))}
         </Stack>
       ) : (
-        <Paper sx={{ textAlign: "center", py: 8 }}>
+        <Paper sx={{textAlign: "center", py: 8}}>
           <Typography variant="body1" color="text.secondary">
             No doctors found.
           </Typography>

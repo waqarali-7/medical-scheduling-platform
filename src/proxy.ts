@@ -7,10 +7,10 @@ type UserRole = "PATIENT" | "DOCTOR" | "CLINIC_ADMIN";
 export const ROLE_ROUTE_MAP: Record<UserRole, string[]> = {
   PATIENT: ["/dashboard", "/doctors", "/appointments"],
   DOCTOR: ["/dashboard", "/appointments", "/doctors", "/patients"],
-  CLINIC_ADMIN: ["/dashboard", "/appointments", "/doctors", "/patients"],
+  CLINIC_ADMIN: ["/dashboard", "/appointments", "/doctors", "/patients", "/clinics"],
 };
 
-const PROTECTED_ROUTES = ["/dashboard", "/appointments", "/doctors", "/patients"];
+const PROTECTED_ROUTES = ["/dashboard", "/appointments", "/doctors", "/patients", "/clinics"];
 
 export async function proxy(request: NextRequest) {
   const response = NextResponse.next({

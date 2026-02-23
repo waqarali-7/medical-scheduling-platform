@@ -2,7 +2,7 @@
 
 import { Box, Typography } from "@mui/material";
 import { SentimentDissatisfied } from "@mui/icons-material";
-import { Button } from "@/components/ui";
+import { Button } from "@/lib/mui";
 import Link from "next/link";
 
 export default function Custom404() {

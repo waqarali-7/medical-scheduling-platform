@@ -1,16 +1,18 @@
 "use client";
 
-import { Box, Stack } from "@mui/material";
+import { Box, Stack } from "@/lib/mui";
 import type { Doctor, Clinic, Appointment } from "@/types";
-import Breadcrumb from "@/components/ui/Breadcrumb";
-import DoctorProfileHeader from "@/components/doctors/DoctorProfileHeader";
-import AboutDoctor from "@/components/doctors/AboutDoctor";
-import Qualification from "@/components/doctors/Qualification";
-import RecentAppointments from "@/components/doctors/RecentAppointments";
-import PracticeLocation from "@/components/doctors/PracticeLocation";
-import Languages from "@/components/doctors/Languages";
-import QuickBook from "@/components/doctors/QuickBook";
-import DoctorAvailability from "@/components/doctors/DoctorAvailability";
+import Breadcrumb from "@/lib/mui/Breadcrumb";
+import {
+  DoctorProfileHeader,
+  AboutDoctor,
+  Qualification,
+  RecentAppointments,
+  PracticeLocation,
+  Languages,
+  QuickBook,
+  DoctorAvailability,
+} from "./components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 
 interface DoctorDetailPageProps {

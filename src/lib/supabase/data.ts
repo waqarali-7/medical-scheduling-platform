@@ -202,6 +202,15 @@ export async function getClinics(): Promise<Clinic[]> {
   return (data ?? []).map(mapClinicRow);
 }
 
+export async function getClinicById(id: string): Promise<Clinic> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("clinics").select("*").eq("id", id).single();
+
+  if (error) throw new Error(error.message);
+
+  return mapClinicRow(data || {});
+}
+
 export async function getDoctors(clinicId?: string): Promise<Doctor[]> {
   const supabase = await createClient();
 
@@ -465,11 +474,6 @@ export async function getDoctorAppointments(doctorId: string): Promise<Appointme
   const currentUser = await getCurrentUserProfile(supabase);
 
   if (!currentUser) throw new Error("User not authenticated");
-
-  // Only clinic admins can access clinic-specific appointments
-  if (currentUser.role !== "DOCTOR" && currentUser.role !== "CLINIC_ADMIN") {
-    throw new Error("Unauthorized access");
-  }
 
   const { data, error } = await supabase
     .from("appointments")

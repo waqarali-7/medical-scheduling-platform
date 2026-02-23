@@ -1,12 +1,11 @@
 "use client";
 
-import { Menu as MenuIcon, Add as AddIcon, Search as SearchIcon, Brightness4, Brightness7 } from "@mui/icons-material";
+import { Menu as MenuIcon, Add as AddIcon, Brightness4, Brightness7, Search } from "@mui/icons-material";
 
 import { useCurrentUser } from "@/context/CurrentUserContext";
-import Button from "@/components/ui/Button";
-import NextLink from "../ui/Link";
-import { IconButton } from "../ui";
-import { Box, Typography } from "@mui/material";
+import Link from "next/link";
+import { Button, IconButton, InputAdornment } from "@/lib/mui";
+import { Box, TextField, Typography } from "@mui/material";
 import { useThemeMode } from "@/context/ThemeContext";
 
 interface HeaderProps {
@@ -51,7 +50,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       {/* Quick Book Button */}
       {currentUser?.role === "PATIENT" && (
         <Button
-          component={NextLink}
+          component={Link}
           href="/appointments/new"
           variant="primary"
           startIcon={<AddIcon />}
@@ -71,29 +70,20 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
           maxWidth: 400,
         }}
       >
-        <Box sx={{ position: "relative", width: "100%" }}>
-          <SearchIcon
-            sx={{
-              position: "absolute",
-              left: 12,
-              top: "50%",
-              transform: "translateY(-50%)",
-              color: "text.disabled",
-              fontSize: 18,
-            }}
-          />
-          <input
-            type="text"
-            placeholder="Search patients, doctors, appointments..."
-            style={{
-              width: "100%",
-              padding: "6px 12px 6px 36px",
-              borderRadius: 16,
-              border: "1px solid #e5e7eb",
-              fontSize: 14,
-            }}
-          />
-        </Box>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search patients, doctors, appointments..."
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search fontSize="small" />
+                </InputAdornment>
+              ),
+            },
+          }}
+        />
       </Box>
 
       <IconButton onClick={toggleMode} color="inherit">

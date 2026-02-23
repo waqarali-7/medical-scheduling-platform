@@ -29,13 +29,13 @@ import {
   MedicalServices,
   Menu,
   Warning,
+  Apartment,
 } from "@mui/icons-material";
 import { usePathname } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
-import NextLink from "../ui/Link";
 import Link from "next/link";
 import { useCurrentUser } from "@/context/CurrentUserContext";
-import { Button } from "@/components/ui";
+import { Button } from "@/lib/mui";
 import { UserRole } from "@/types";
 import { ROLE_ROUTE_MAP } from "@/proxy";
 
@@ -46,6 +46,7 @@ const ALL_NAV_ITEMS = [
   { label: "Appointments", href: "/appointments", icon: <CalendarMonth /> },
   { label: "Doctors", href: "/doctors", icon: <MedicalServices /> },
   { label: "Patients", href: "/patients", icon: <People /> },
+  { label: "Clinics", href: "/clinics", icon: <Apartment /> },
 ] as const;
 
 export const NAV_ITEMS = (role: UserRole | undefined) => {
@@ -198,7 +199,7 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
             return (
               <Tooltip key={item.href} title={!isOpen ? item.label : ""} placement="right">
                 <ListItemButton
-                  component={NextLink}
+                  component={Link}
                   href={item.href}
                   selected={isActive}
                   onClick={onLinkClick}
@@ -208,8 +209,6 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
                     px: 2,
                     height: 48,
                     justifyContent: "initial",
-                    color: isActive ? "primary.main" : "text.secondary",
-                    "&.Mui-selected": { bgcolor: "primary.lighter" },
                   }}
                 >
                   <ListItemIcon
@@ -230,24 +229,26 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
       </Box>
 
       {/* Bottom Links */}
-      {isOpen && (
-        <Box sx={{ px: 2, py: 2, borderTop: 1, borderColor: "divider" }}>
-          <List>
-            <ListItemButton component={NextLink} href="/settings" sx={{ borderRadius: 2 }}>
-              <ListItemIcon>
-                <Settings sx={{ fontSize: 18 }} />
-              </ListItemIcon>
-              <ListItemText primary="Settings" />
-            </ListItemButton>
-            <ListItemButton onClick={handleLogoutClick} sx={{ borderRadius: 2, color: "error.main" }}>
-              <ListItemIcon>
-                <Logout sx={{ fontSize: 18, color: "error.main" }} />
-              </ListItemIcon>
-              <ListItemText primary="Sign Out" />
-            </ListItemButton>
-          </List>
-        </Box>
-      )}
+
+      <Box sx={{ py: 2, borderTop: 1, borderColor: "divider" }}>
+        <List>
+          <ListItemButton component={Link} href="/settings" sx={{ borderRadius: 2, paddingStart: 3, height: 48 }}>
+            <ListItemIcon>
+              <Settings sx={{ fontSize: 22 }} />
+            </ListItemIcon>
+            {isOpen && <ListItemText primary="Settings" />}
+          </ListItemButton>
+          <ListItemButton
+            onClick={handleLogoutClick}
+            sx={{ borderRadius: 2, paddingStart: 3, height: 48, color: "error.main" }}
+          >
+            <ListItemIcon>
+              <Logout sx={{ fontSize: 22, color: "error.main" }} />
+            </ListItemIcon>
+            {isOpen && <ListItemText primary="Sign Out" />}
+          </ListItemButton>
+        </List>
+      </Box>
 
       {/* Logout Confirmation Dialog */}
       <Dialog open={showLogoutDialog} onClose={handleLogoutCancel}>
