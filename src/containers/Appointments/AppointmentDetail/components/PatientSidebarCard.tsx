@@ -1,7 +1,7 @@
 "use client";
 
-import { Phone, Email, Description } from "@mui/icons-material";
-import { Box, Stack, Typography, Avatar, Chip } from "@/lib/mui";
+import { Phone, Email, Description } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Avatar, Chip } from "@/lib/mui/components";
 import type { Patient } from "@/types";
 
 interface PatientSidebarCardProps {

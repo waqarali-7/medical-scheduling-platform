@@ -6,4 +6,3 @@ export { default as DoctorSidebarCard } from "./DoctorSidebarCard";
 export { default as PatientSidebarCard } from "./PatientSidebarCard";
 export { default as MetadataCard } from "./MetadataCard";
 export { default as CancelDialog } from "./CancelDialog";
-export { default as EmptyState } from "./EmptyState";

@@ -1,5 +1,5 @@
-import { Stack, Typography, IconButton, Box } from "@/lib/mui";
-import { ArrowBack, Star } from "@mui/icons-material";
+import { Stack, Typography, IconButton, Box } from "@/lib/mui/components";
+import { ArrowBack, Star } from "@/lib/mui/icons";
 import Link from "next/link";
 import type { HeaderProps } from "../types";
 

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { canTransition } from "@/lib/utils";
 import type { AppointmentStatus } from "@/types";
-import { Box, Grid, Card, Stack } from "@/lib/mui";
+import { Box, Grid, Card, Stack } from "@/lib/mui/components";
 import type { AppointmentDetailProps } from "./types";
 import {
   DetailHeader,
@@ -14,8 +14,9 @@ import {
   PatientSidebarCard,
   MetadataCard,
   CancelDialog,
-  EmptyState,
 } from "./components";
+import { CalendarMonth } from "@/lib/mui/icons";
+import { EmptyState } from "@/components/common";
 
 export default function AppointmentDetail({ appointment }: AppointmentDetailProps) {
   const [currentStatus, setCurrentStatus] = useState<AppointmentStatus>(appointment?.status ?? "PENDING");
@@ -23,7 +24,7 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
   const [cancelReason, setCancelReason] = useState("");
 
   if (!appointment) {
-    return <EmptyState />;
+    return <EmptyState element={<CalendarMonth sx={{ fontSize: 48 }} />} primary="No appointments found" />;
   }
 
   const { doctor, patient, clinic } = appointment;

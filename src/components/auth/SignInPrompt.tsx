@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Box, Typography } from "@/lib/mui";
+import { Box, Typography } from "@/lib/mui/components";
 
 export function SignInPrompt() {
   return (

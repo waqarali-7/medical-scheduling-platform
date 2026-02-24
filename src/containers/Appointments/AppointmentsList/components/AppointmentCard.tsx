@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { formatTimeBerlin, formatDuration, formatRelativeDate } from "@/lib/utils";
-import { StatusBadge, TypeBadge } from "@/lib/mui/Badge";
-import Avatar from "@/lib/mui/Avatar";
-import { Card } from "@/lib/mui";
-import { Stack, Box, Typography } from "@/lib/mui";
+import { StatusBadge, TypeBadge } from "@/lib/mui/components/Badge";
+import Avatar from "@/lib/mui/components/Avatar";
+import { Card } from "@/lib/mui/components";
+import { Stack, Box, Typography } from "@/lib/mui/components";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import PlaceIcon from "@mui/icons-material/Place";

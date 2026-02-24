@@ -1,7 +1,7 @@
 "use client";
 
-import { LocationOn } from "@mui/icons-material";
-import { Stack, Typography, TextField, Grid } from "@/lib/mui";
+import { LocationOn } from "@/lib/mui/icons";
+import { Stack, Typography, TextField, Grid } from "@/lib/mui/components";
 import type { LocationStepProps } from "../types";
 
 export default function LocationStep({ formData, onChange }: LocationStepProps) {

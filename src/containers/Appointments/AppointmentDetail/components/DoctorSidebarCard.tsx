@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Phone, Email, ChevronRight } from "@mui/icons-material";
-import { Box, Stack, Typography, Avatar, Button } from "@/lib/mui";
+import { Phone, Email, ChevronRight } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Avatar, Button } from "@/lib/mui/components";
 import type { Doctor } from "@/types";
 
 interface DoctorSidebarCardProps {

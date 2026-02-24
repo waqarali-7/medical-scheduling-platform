@@ -1,4 +1,4 @@
-import { Box, Stack, Typography, LinearProgress } from "@/lib/mui";
+import { Box, Stack, Typography, LinearProgress } from "@/lib/mui/components";
 import { PasswordStrength } from "../utils";
 
 interface PasswordStrengthMeterProps {

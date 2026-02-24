@@ -1,5 +1,5 @@
-import { Paper, Stack, Typography } from "@/lib/mui";
-import { Schedule } from "@mui/icons-material";
+import { Paper, Stack, Typography } from "@/lib/mui/components";
+import { Schedule } from "@/lib/mui/icons";
 import { StatusBannerProps } from "../types";
 
 export function StatusBanner({ todayHours }: StatusBannerProps) {

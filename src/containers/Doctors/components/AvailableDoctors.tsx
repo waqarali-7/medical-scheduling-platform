@@ -1,7 +1,7 @@
 import {Clinic, Doctor} from "@/types";
-import {ArrowForward} from "@mui/icons-material";
+import {ArrowForward} from "@/lib/mui/icons";
 import Link from "next/link";
-import { Button, Box, Stack, Typography } from "@/lib/mui";
+import { Button, Box, Stack, Typography } from "@/lib/mui/components";
 import DoctorCard from "./DoctorCard";
 
 export default function AvailableDoctors({doctors, clinics}: {doctors: Doctor[]; clinics: Clinic[]}) {

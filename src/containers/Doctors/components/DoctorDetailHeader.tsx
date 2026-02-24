@@ -1,5 +1,5 @@
 import { Clinic, Doctor } from "@/types";
-import { Box, Typography } from "@/lib/mui";
+import { Box, Typography } from "@/lib/mui/components";
 
 export default function DoctorDetailHeader({ doctors, clinics }: { doctors: Doctor[]; clinics: Clinic[] }) {
   return (

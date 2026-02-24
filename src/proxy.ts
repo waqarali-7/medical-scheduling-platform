@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-
-type UserRole = "PATIENT" | "DOCTOR" | "CLINIC_ADMIN";
+import { UserRole } from "@/types";
 
 export const ROLE_ROUTE_MAP: Record<UserRole, string[]> = {
   PATIENT: ["/dashboard", "/doctors", "/appointments"],

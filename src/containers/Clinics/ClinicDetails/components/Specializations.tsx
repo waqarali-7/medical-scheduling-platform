@@ -1,4 +1,4 @@
-import { Stack, Typography, Chip } from "@/lib/mui";
+import { Stack, Typography, Chip } from "@/lib/mui/components";
 import { SpecializationsProps } from "../types";
 
 export function Specializations({ specializations }: SpecializationsProps) {

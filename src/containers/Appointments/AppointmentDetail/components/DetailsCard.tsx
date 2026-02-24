@@ -1,7 +1,7 @@
 "use client";
 
-import { CalendarMonth, Schedule, Description, Cancel } from "@mui/icons-material";
-import { Box, Stack, Typography, Paper, TypeBadge } from "@/lib/mui";
+import { CalendarMonth, Schedule, Description, Cancel } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Paper, TypeBadge } from "@/lib/mui/components";
 import { formatDateBerlin, formatTimeBerlin, formatDuration } from "@/lib/utils";
 import type { Appointment } from "@/types";
 

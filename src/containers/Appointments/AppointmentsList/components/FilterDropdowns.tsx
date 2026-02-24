@@ -1,6 +1,6 @@
 "use client";
 
-import { TextField, MenuItem, Grid } from "@/lib/mui";
+import { TextField, MenuItem, Grid } from "@/lib/mui/components";
 import type { AppointmentType } from "@/types";
 import { FilterDropdownsProps } from "../types";
 import { TYPE_FILTERS } from "../constants";

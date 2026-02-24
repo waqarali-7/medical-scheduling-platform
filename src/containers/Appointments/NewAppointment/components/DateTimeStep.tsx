@@ -1,7 +1,7 @@
 "use client";
 
-import { CalendarMonth, Schedule } from "@mui/icons-material";
-import { Box, Stack, Typography, Grid, Paper, Button, Avatar, Alert } from "@/lib/mui";
+import { CalendarMonth, Schedule } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Grid, Paper, Button, Avatar, Alert } from "@/lib/mui/components";
 import type { Doctor, TimeSlot } from "@/types";
 
 interface DateTimeStepProps {

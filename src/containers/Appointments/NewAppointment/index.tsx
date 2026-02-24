@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Doctor, AppointmentType, TimeSlot } from "@/types";
-import { Box, Stepper, Step, StepLabel, Card } from "@/lib/mui";
+import { Box, Stepper, Step, StepLabel, Card } from "@/lib/mui/components";
 import type { NewAppointmentProps } from "./types";
 import { STEP_LABELS, getAvailableDates } from "./constants";
 import {

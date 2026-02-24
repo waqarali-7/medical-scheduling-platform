@@ -30,6 +30,9 @@ export { default as Typography } from "./Typography";
 export { StatusBadge, TypeBadge } from "./Badge";
 
 // Re-export types
+
+export type { SxProps } from "@mui/material";
+export type { Theme } from "@mui/material";
 export type { AlertProps } from "./Alert";
 export type { AvatarProps } from "./Avatar";
 export type { BoxProps } from "./Box";

@@ -1,15 +1,5 @@
-import { ChevronRightRounded, Search } from "@mui/icons-material";
-import {
-  Paper,
-  Stack,
-  TextField,
-  InputAdornment,
-  Select,
-  MenuItem,
-  Chip,
-  FormControlLabel,
-  Switch,
-} from "@/lib/mui";
+import { ChevronRightRounded, Search } from "@/lib/mui/icons";
+import { Paper, Stack, TextField, InputAdornment, Select, MenuItem, Chip, FormControlLabel, Switch } from "@/lib/mui/components";
 
 const SPECIALIZATIONS = ["All", "Cardiology", "Neurology", "General Practice", "Dermatology", "Orthopedics"];
 

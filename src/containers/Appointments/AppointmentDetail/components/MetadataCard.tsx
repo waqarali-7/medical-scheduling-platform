@@ -1,6 +1,6 @@
 "use client";
 
-import { Stack, Typography } from "@/lib/mui";
+import { Stack, Typography } from "@/lib/mui/components";
 import { formatDateBerlin, formatCurrency } from "@/lib/utils";
 import type { Appointment, Doctor } from "@/types";
 

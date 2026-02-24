@@ -30,14 +30,15 @@ import {
   Menu,
   Warning,
   Apartment,
-} from "@mui/icons-material";
+} from "@/lib/mui/icons";
 import { usePathname } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import Link from "next/link";
 import { useCurrentUser } from "@/context/CurrentUserContext";
-import { Button } from "@/lib/mui";
+import { Button } from "@/lib/mui/components";
 import { UserRole } from "@/types";
 import { ROLE_ROUTE_MAP } from "@/proxy";
+import Logo from "@/components/common/Logo";
 
 const supabase = createBrowserClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
 
@@ -126,25 +127,7 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
       >
         {isOpen && (
           <Link href="/dashboard" style={{ textDecoration: "none" }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Box
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: 2,
-                  background: "linear-gradient(135deg, #38bdf8 0%, #14b8a6 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "white",
-                }}
-              >
-                <MedicalServices sx={{ fontSize: 18 }} />
-              </Box>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: "text.primary" }}>
-                Med<span style={{ color: "#38bdf8" }}>Book</span>
-              </Typography>
-            </Box>
+            <Logo icon={true} iconSize={18} />
           </Link>
         )}
         <IconButton onClick={toggleSidebar}>

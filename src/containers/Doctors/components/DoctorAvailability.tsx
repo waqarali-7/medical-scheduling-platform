@@ -1,6 +1,6 @@
 import {Doctor} from "@/types";
-import {AccessTime} from "@mui/icons-material";
-import {Paper, Typography, Stack, Box} from "@/lib/mui";
+import {AccessTime} from "@/lib/mui/icons";
+import {Paper, Typography, Stack, Box} from "@/lib/mui/components";
 
 export default function DoctorAvailability({doctor}: {doctor: Doctor}) {
   return (

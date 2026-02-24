@@ -1,6 +1,6 @@
 "use client";
 
-import { StatCard, StatCardProps } from "@/lib/mui";
+import { StatCard, StatCardProps } from "@/lib/mui/components";
 import { DashboardStats } from "@/types";
 import {
   CalendarMonth,
@@ -11,8 +11,8 @@ import {
   LocalHospital,
   Warning,
   TrendingUp,
-} from "@mui/icons-material";
-import { Box, Typography, Grid } from "@/lib/mui";
+} from "@/lib/mui/icons";
+import { Box, Typography, Grid } from "@/lib/mui/components";
 
 interface OverviewProps {
   stats: DashboardStats;

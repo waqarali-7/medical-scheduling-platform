@@ -1,7 +1,7 @@
 "use client";
 
-import { Schedule } from "@mui/icons-material";
-import { Stack, Typography, Box, Switch, TextField, Paper } from "@/lib/mui";
+import { Schedule } from "@/lib/mui/icons";
+import { Stack, Typography, Box, Switch, TextField, Paper } from "@/lib/mui/components";
 import { DAYS, DAY_LABELS } from "../constants";
 import type { OpeningHoursStepProps } from "../types";
 

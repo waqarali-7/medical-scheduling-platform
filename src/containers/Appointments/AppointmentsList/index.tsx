@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Box, Stack } from "@/lib/mui";
+import { Box, Stack } from "@/lib/mui/components";
 import { AppointmentsHeader, FiltersCard, AppointmentCard } from "./components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import type { AppointmentStatus, AppointmentType } from "@/types";
 import type { AppointmentsListProps } from "./types";
-import { EmptyState } from "../AppointmentDetail/components";
+import { CalendarMonth } from "@/lib/mui/icons";
+import { EmptyState } from "@/components/common";
 
 export default function AppointmentsList({ initialAppointments }: AppointmentsListProps) {
   const currentUser = useCurrentUser();
@@ -50,7 +51,6 @@ export default function AppointmentsList({ initialAppointments }: AppointmentsLi
 
   return (
     <Box sx={{ py: 4, px: 2 }}>
-      {" "}
       <AppointmentsHeader
         totalCount={initialAppointments.length}
         confirmedCount={counts.CONFIRMED || 0}
@@ -74,7 +74,11 @@ export default function AppointmentsList({ initialAppointments }: AppointmentsLi
           ))}
         </Stack>
       ) : (
-        <EmptyState />
+        <EmptyState
+          element={<CalendarMonth sx={{ fontSize: 48 }} />}
+          primary="No appointments found"
+          secondary="Try adjusting your filters or search terms."
+        />
       )}
     </Box>
   );

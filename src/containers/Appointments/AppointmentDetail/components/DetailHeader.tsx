@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowBack } from "@mui/icons-material";
-import { Box, Stack, Typography, IconButton, StatusBadge } from "@/lib/mui";
+import { ArrowBack } from "@/lib/mui/icons";
+import { Box, Stack, Typography, IconButton, StatusBadge } from "@/lib/mui/components";
 import { formatDateBerlin, formatTimeBerlin, formatDuration } from "@/lib/utils";
 import type { AppointmentStatus } from "@/types";
 

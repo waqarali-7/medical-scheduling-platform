@@ -1,7 +1,7 @@
 "use client";
 
-import { Description } from "@mui/icons-material";
-import { Box, Stack, Typography, Grid, Paper, TextField } from "@/lib/mui";
+import { Description } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Grid, Paper, TextField } from "@/lib/mui/components";
 import { APPOINTMENT_TYPES } from "../constants";
 import type { AppointmentType } from "@/types";
 

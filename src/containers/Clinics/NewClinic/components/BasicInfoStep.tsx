@@ -1,7 +1,7 @@
 "use client";
 
-import { Business } from "@mui/icons-material";
-import { Stack, Typography, TextField } from "@/lib/mui";
+import { Business } from "@/lib/mui/icons";
+import { Stack, Typography, TextField } from "@/lib/mui/components";
 import type { BasicInfoStepProps } from "../types";
 
 export default function BasicInfoStep({ formData, onChange }: BasicInfoStepProps) {

@@ -1,6 +1,6 @@
 import { formatDateBerlin } from "@/lib/utils";
 import { Appointment } from "@/types";
-import { Box, Typography, Stack, Avatar, Card, StatusBadge } from "@/lib/mui";
+import { Box, Typography, Stack, Avatar, Card, StatusBadge } from "@/lib/mui/components";
 
 export default function DoctorsRecentActivity({ recentActivity }: { recentActivity: Appointment[] }) {
   return (

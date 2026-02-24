@@ -1,12 +1,13 @@
 "use client";
 
-import { Menu as MenuIcon, Add as AddIcon, Brightness4, Brightness7, Search } from "@mui/icons-material";
+import { Menu, Add, Brightness4, Brightness7, Search } from "@/lib/mui/icons";
 
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import Link from "next/link";
-import { Button, IconButton, InputAdornment } from "@/lib/mui";
+import { Button, IconButton, InputAdornment } from "@/lib/mui/components";
 import { Box, TextField, Typography } from "@mui/material";
 import { useThemeMode } from "@/context/ThemeContext";
+import { Role } from "@/lib/enums";
 
 interface HeaderProps {
   onMenuClick: () => void;
@@ -37,7 +38,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
     >
       {/* Mobile menu toggle */}
       <IconButton onClick={onMenuClick} sx={{ display: { lg: "none" } }}>
-        <MenuIcon />
+        <Menu />
       </IconButton>
 
       {/* Title */}
@@ -48,12 +49,12 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       )}
 
       {/* Quick Book Button */}
-      {currentUser?.role === "PATIENT" && (
+      {currentUser?.role === Role.PATIENT && (
         <Button
           component={Link}
           href="/appointments/new"
           variant="primary"
-          startIcon={<AddIcon />}
+          startIcon={<Add />}
           sx={{
             display: { xs: "none", sm: "flex" },
           }}

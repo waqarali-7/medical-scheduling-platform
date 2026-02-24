@@ -1,10 +1,11 @@
 import { formatCurrency } from "@/lib/utils";
 import { Doctor } from "@/types";
-import { CalendarMonth } from "@mui/icons-material";
-import { Paper, Box, Stack, Typography, Chip, Button } from "@/lib/mui";
+import { CalendarMonth } from "@/lib/mui/icons";
+import { Paper, Box, Stack, Typography, Chip, Button } from "@/lib/mui/components";
 import Link from "next/link";
-import { renderStars } from "@/lib/mui/Stars";
+import { renderStars } from "@/lib/mui/components/Stars";
 import { useCurrentUser } from "@/context/CurrentUserContext";
+import { Role } from "@/lib/enums";
 
 export default function DoctorProfileHeader({ doctor }: { doctor: Doctor }) {
   const currentUser = useCurrentUser();
@@ -67,7 +68,7 @@ export default function DoctorProfileHeader({ doctor }: { doctor: Doctor }) {
           <Typography variant="h6" fontWeight={700}>
             {formatCurrency(doctor.consultationFee)}
           </Typography>
-          {currentUser?.role === "PATIENT" && (
+          {currentUser?.role === Role.PATIENT && (
             <Link href={`/appointments/new?doctor=${doctor.id}`} passHref>
               <Button variant="primary" startIcon={<CalendarMonth />} color="primary" size="medium">
                 Book Appointment

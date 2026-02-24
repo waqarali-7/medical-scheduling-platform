@@ -1,4 +1,4 @@
-import { Stack } from "@/lib/mui";
+import { Stack } from "@/lib/mui/components";
 import { DoctorsListProps } from "../types";
 import { DoctorCard } from "@/containers/Doctors/components";
 

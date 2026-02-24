@@ -1,4 +1,4 @@
-import { Stack, Card, Typography } from "@/lib/mui";
+import { Stack, Card, Typography } from "@/lib/mui/components";
 import type { Day, OpeningHoursProps } from "../types";
 import { DAY_LABELS } from "../constants";
 

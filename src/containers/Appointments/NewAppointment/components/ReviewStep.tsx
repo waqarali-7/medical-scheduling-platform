@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, LocationOn } from "@mui/icons-material";
-import { Box, Stack, Typography, Paper, Grid, Avatar, Alert } from "@/lib/mui";
+import { Check, LocationOn } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Paper, Grid, Avatar, Alert } from "@/lib/mui/components";
 import { formatCurrency } from "@/lib/utils";
 import { APPOINTMENT_TYPES } from "../constants";
 import type { Doctor, Clinic } from "@/types";

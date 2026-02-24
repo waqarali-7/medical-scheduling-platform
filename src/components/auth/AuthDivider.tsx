@@ -1,4 +1,4 @@
-import { Divider, Typography } from "@/lib/mui";
+import { Divider, Typography } from "@/lib/mui/components";
 
 export interface AuthDividerProps {
   label?: string;

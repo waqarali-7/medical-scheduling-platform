@@ -1,6 +1,6 @@
 import { Doctor } from "@/types";
-import { MedicalServices } from "@mui/icons-material";
-import { Paper, Typography, Stack } from "@/lib/mui";
+import { MedicalServices } from "@/lib/mui/icons";
+import { Paper, Typography, Stack } from "@/lib/mui/components";
 
 export default function Qualification({ doctor }: { doctor: Doctor }) {
   return (

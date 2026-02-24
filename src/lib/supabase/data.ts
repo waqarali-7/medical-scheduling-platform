@@ -14,6 +14,7 @@ import type {
   AppointmentStatus,
   ClinicAdmin,
 } from "@/types";
+import { Role } from "@/lib/enums";
 
 /* ────────────────────────────────────────────────────────────────────────────
    Raw DB Row Types (snake_case)
@@ -112,7 +113,7 @@ function mapProfileRowToUser(r: ProfileRow): User {
     createdAt: r.created_at,
   };
 
-  if (r.role === "PATIENT") {
+  if (r.role === Role.PATIENT) {
     return {
       ...base,
       role: "PATIENT",
@@ -123,7 +124,7 @@ function mapProfileRowToUser(r: ProfileRow): User {
     } as Patient;
   }
 
-  if (r.role === "DOCTOR") {
+  if (r.role === Role.DOCTOR) {
     return {
       ...base,
       role: "DOCTOR",
@@ -260,11 +261,11 @@ export async function getHydratedAppointments(): Promise<Appointment[]> {
     .select("*, patient:profiles!patient_id(*), doctor:profiles!doctor_id(*), clinic:clinics(*)");
 
   // Role-based filtering
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     query = query.eq("patient_id", currentUser.id);
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     query = query.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === "CLINIC_ADMIN") {
+  } else if (currentUser.role === Role.CLINIC_ADMIN) {
     // Clinic admins can see appointments for their clinic
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     if (clinicId) {
@@ -291,11 +292,11 @@ export async function getAppointmentById(id: string): Promise<Appointment | null
     .eq("id", id);
 
   // Role-based filtering
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     query = query.eq("patient_id", currentUser.id);
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     query = query.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === "CLINIC_ADMIN") {
+  } else if (currentUser.role === Role.CLINIC_ADMIN) {
     // Clinic admins can see appointments for their clinic
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     if (clinicId) {
@@ -339,11 +340,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   const profilesQuery = supabase.from("profiles").select("id, role");
 
   // Role-based filtering
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     appointmentsQuery = appointmentsQuery.eq("patient_id", currentUser.id);
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     appointmentsQuery = appointmentsQuery.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === "CLINIC_ADMIN") {
+  } else if (currentUser.role === Role.CLINIC_ADMIN) {
     // Clinic admins can see appointments for their clinic
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     if (clinicId) {
@@ -373,7 +374,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
   let totalPatients = 0;
   let totalDoctors = 0;
 
-  if (currentUser.role === "CLINIC_ADMIN") {
+  if (currentUser.role === Role.CLINIC_ADMIN) {
     // Clinic admins see stats for their clinic only
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     if (clinicId) {
@@ -394,8 +395,8 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     }
   } else {
     // For doctors and patients, use the general counts
-    totalPatients = profiles.filter((p) => p.role === "PATIENT").length;
-    totalDoctors = profiles.filter((p) => p.role === "DOCTOR").length;
+    totalPatients = profiles.filter((p) => p.role === Role.PATIENT).length;
+    totalDoctors = profiles.filter((p) => p.role === Role.DOCTOR).length;
   }
 
   return {
@@ -519,11 +520,11 @@ export async function getMyUpcomingAppointments(): Promise<Appointment[]> {
     .order("scheduled_at", { ascending: true });
 
   // Role-based filtering
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     query = query.eq("patient_id", currentUser.id);
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     query = query.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === "CLINIC_ADMIN") {
+  } else if (currentUser.role === Role.CLINIC_ADMIN) {
     // Clinic admins can see appointments for their clinic
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     if (clinicId) {
@@ -553,11 +554,11 @@ export async function getMyPastAppointments(): Promise<Appointment[]> {
     .order("scheduled_at", { ascending: false });
 
   // Role-based filtering
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     query = query.eq("patient_id", currentUser.id);
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     query = query.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === "CLINIC_ADMIN") {
+  } else if (currentUser.role === Role.CLINIC_ADMIN) {
     // Clinic admins can see appointments for their clinic
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     if (clinicId) {
@@ -643,12 +644,12 @@ export async function createAppointment(appointmentData: Omit<Appointment, "id" 
   if (!currentUser) throw new Error("User not authenticated");
 
   // Validate user has permission to create appointment
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     // Patients can only create appointments for themselves
     if (appointmentData.patientId !== currentUser.id) {
       throw new Error("Unauthorized: Cannot create appointment for another patient");
     }
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     // Doctors can only create appointments for themselves
     if (appointmentData.doctorId !== currentUser.id) {
       throw new Error("Unauthorized: Cannot create appointment for another doctor");
@@ -694,11 +695,11 @@ export async function updateAppointmentStatus(id: string, status: AppointmentSta
   // Check if user has permission to update this appointment
   let canUpdate = false;
 
-  if (currentUser.role === "PATIENT") {
+  if (currentUser.role === Role.PATIENT) {
     canUpdate = appointment.patient_id === currentUser.id;
-  } else if (currentUser.role === "DOCTOR") {
+  } else if (currentUser.role === Role.DOCTOR) {
     canUpdate = appointment.doctor_id === currentUser.id;
-  } else if (currentUser.role === "CLINIC_ADMIN") {
+  } else if (currentUser.role === Role.CLINIC_ADMIN) {
     const clinicId = (currentUser as ClinicAdmin).clinicId;
     canUpdate = clinicId ? appointment.clinic_id === clinicId : false;
   }

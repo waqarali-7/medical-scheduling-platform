@@ -1,8 +1,8 @@
 "use client";
 
-import { Box, Stack } from "@/lib/mui";
+import { Box, Stack } from "@/lib/mui/components";
 import type { Doctor, Clinic, Appointment } from "@/types";
-import Breadcrumb from "@/lib/mui/Breadcrumb";
+import Breadcrumb from "@/lib/mui/components/Breadcrumb";
 import {
   DoctorProfileHeader,
   AboutDoctor,
@@ -14,13 +14,14 @@ import {
   DoctorAvailability,
 } from "./components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
+import { Role } from "@/lib/enums";
 
-interface DoctorDetailPageProps {
+interface DoctorDetailProps {
   doctor: Doctor & { clinic?: Clinic };
   appointments: Appointment[];
 }
 
-export default function DoctorDetailPage({ doctor, appointments }: DoctorDetailPageProps) {
+export default function DoctorDetail({ doctor, appointments }: DoctorDetailProps) {
   const clinic = doctor.clinic;
   const currentUser = useCurrentUser();
 
@@ -48,7 +49,7 @@ export default function DoctorDetailPage({ doctor, appointments }: DoctorDetailP
 
           <DoctorAvailability doctor={doctor} />
 
-          {currentUser?.role === "PATIENT" && <QuickBook doctor={doctor} />}
+          {currentUser?.role === Role.PATIENT && <QuickBook doctor={doctor} />}
         </Stack>
       </Stack>
     </Box>

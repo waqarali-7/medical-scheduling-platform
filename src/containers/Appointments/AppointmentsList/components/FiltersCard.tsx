@@ -1,7 +1,6 @@
 "use client";
 
-import { Stack, Grid } from "@/lib/mui";
-import { Card } from "@/lib/mui";
+import { Stack, Grid, Paper } from "@/lib/mui/components";
 import { SearchBar } from "./SearchBar";
 import { FilterDropdowns } from "./FilterDropdowns";
 import { StatusTabs } from "./StatusTabs";
@@ -19,7 +18,7 @@ export function FiltersCard({
   counts,
 }: FiltersCardProps) {
   return (
-    <Card sx={{ mb: 3, p: 2 }}>
+    <Paper sx={{ p: 3, mb: 3 }}>
       <Stack spacing={2}>
         <Grid container spacing={2}>
           <Grid size={{ xs: 12, md: 6 }}>
@@ -35,6 +34,6 @@ export function FiltersCard({
 
         <StatusTabs activeStatus={activeStatus} onStatusChange={onStatusChange} counts={counts} />
       </Stack>
-    </Card>
+    </Paper>
   );
 }

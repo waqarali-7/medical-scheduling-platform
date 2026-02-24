@@ -1,15 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Box, Typography, Chip, Divider, Avatar, Card, IconButton } from "@/lib/mui";
-import {
-  Star as StarIcon,
-  LocationOn as LocationOnIcon,
-  Public as PublicIcon,
-  AccessTime as AccessTimeIcon,
-  ChevronRight as ChevronRightIcon,
-  FiberManualRecord as DotIcon,
-} from "@mui/icons-material";
+import { Box, Typography, Chip, Divider, Avatar, Card, IconButton } from "@/lib/mui/components";
+import { Star, LocationOn, Public, AccessTime, ChevronRight, FiberManualRecord } from "@/lib/mui/icons";
 
 import type { Doctor, Clinic } from "@/types";
 import { formatCurrency } from "@/lib/utils";
@@ -52,7 +45,7 @@ export default function DoctorCard({ doctor, clinics = [], compact = false }: Do
               </Box>
 
               <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
-                <StarIcon sx={{ fontSize: 16, color: "warning.main" }} />
+                <Star sx={{ fontSize: 16, color: "warning.main" }} />
                 <Typography variant="body2" fontWeight={600} color="text.primary">
                   {doctor.rating.toFixed(1)}
                 </Typography>
@@ -65,17 +58,17 @@ export default function DoctorCard({ doctor, clinics = [], compact = false }: Do
             {!compact && (
               <Box sx={{ mt: 1, display: "flex", flexDirection: "column", gap: 0.5 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <LocationOnIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <LocationOn sx={{ fontSize: 16, color: "text.disabled" }} />
                   <Typography variant="caption" noWrap>
                     {clinic?.name}, {clinic?.address.city}
                   </Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <PublicIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <Public sx={{ fontSize: 16, color: "text.disabled" }} />
                   <Typography variant="caption">{doctor.languages.join(", ")}</Typography>
                 </Box>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <AccessTimeIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <AccessTime sx={{ fontSize: 16, color: "text.disabled" }} />
                   <Typography variant="caption">
                     Next:{" "}
                     {doctor.nextAvailableSlot
@@ -108,7 +101,7 @@ export default function DoctorCard({ doctor, clinics = [], compact = false }: Do
                 <Chip
                   size="small"
                   icon={
-                    <DotIcon
+                    <FiberManualRecord
                       sx={{
                         fontSize: "8px !important",
                         color: doctor.isAvailable ? "success.main" : "text.disabled",
@@ -124,7 +117,7 @@ export default function DoctorCard({ doctor, clinics = [], compact = false }: Do
                   }}
                 />
                 <IconButton size="small">
-                  <ChevronRightIcon sx={{ fontSize: 16, color: "text.disabled" }} />
+                  <ChevronRight sx={{ fontSize: 16, color: "text.disabled" }} />
                 </IconButton>
               </Box>
             </Box>

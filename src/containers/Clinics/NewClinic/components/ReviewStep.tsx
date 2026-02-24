@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, LocationOn, Schedule, LocalHospital, Business } from "@mui/icons-material";
-import { Stack, Typography, Paper, Grid, Box, Chip, Alert } from "@/lib/mui";
+import { Check, LocationOn, Schedule, LocalHospital, Business } from "@/lib/mui/icons";
+import { Stack, Typography, Paper, Grid, Box, Chip, Alert } from "@/lib/mui/components";
 import { DAY_LABELS } from "../constants";
 import type { ReviewStepProps } from "../types";
 

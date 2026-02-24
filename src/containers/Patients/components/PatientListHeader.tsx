@@ -1,4 +1,4 @@
-import { Box, Typography } from "@/lib/mui";
+import { Box, Typography } from "@/lib/mui/components";
 
 interface PatientListHeaderProps {
   count: number;

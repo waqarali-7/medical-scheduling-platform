@@ -1,5 +1,5 @@
-import { Box, Typography } from "@/lib/mui";
-import { MedicalServices } from "@mui/icons-material";
+import { Box, Typography } from "@/lib/mui/components";
+import Logo from "@/components/common/Logo";
 
 export interface AuthHeroProps {
   title: string;
@@ -17,11 +17,10 @@ export function AuthHero({ title, subtitle }: AuthHeroProps) {
           width: 64,
           height: 64,
           borderRadius: 4,
-          bgcolor: "primary.main",
           mb: 2,
         }}
       >
-        <MedicalServices sx={{ fontSize: 32, color: "primary.contrastText" }} />
+        <Logo icon={true} iconSize={40} text={false} />
       </Box>
       <Typography variant="h4" fontWeight={700} color="text.primary" sx={{ mb: 1 }}>
         {title}

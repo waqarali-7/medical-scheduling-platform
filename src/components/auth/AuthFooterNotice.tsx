@@ -1,4 +1,4 @@
-import { Typography } from "@/lib/mui";
+import { Typography } from "@/lib/mui/components";
 
 export interface AuthFooterNoticeProps {
   text: string;

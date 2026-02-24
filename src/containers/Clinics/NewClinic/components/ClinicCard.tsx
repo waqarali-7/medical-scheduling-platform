@@ -2,8 +2,8 @@
 
 import { useMemo } from "react";
 import Link from "next/link";
-import { Box, Typography, Stack, Chip, Paper } from "@/lib/mui";
-import { LocationOn, Star, FiberManualRecord, ArrowForward } from "@mui/icons-material";
+import { Box, Typography, Stack, Chip, Paper } from "@/lib/mui/components";
+import { LocationOn, Star, FiberManualRecord, ArrowForward } from "@/lib/mui/icons";
 import type { Clinic, Doctor } from "@/types";
 
 interface ClinicCardProps {

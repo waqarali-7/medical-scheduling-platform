@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack, Chip } from "@/lib/mui";
+import { Box, Stack, Chip } from "@/lib/mui/components";
 import { STATUS_TABS } from "../constants";
 import { StatusTabsProps } from "../types";
 

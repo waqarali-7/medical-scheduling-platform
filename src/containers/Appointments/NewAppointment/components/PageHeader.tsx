@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowBack } from "@mui/icons-material";
-import { Box, Stack, Typography, IconButton } from "@/lib/mui";
+import { ArrowBack } from "@/lib/mui/icons";
+import { Box, Stack, Typography, IconButton } from "@/lib/mui/components";
 
 export default function PageHeader() {
   return (

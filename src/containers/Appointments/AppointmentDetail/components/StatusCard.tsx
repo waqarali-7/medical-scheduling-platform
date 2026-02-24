@@ -1,12 +1,7 @@
 "use client";
 
-import {
-  CheckCircle,
-  Cancel,
-  Warning,
-  FavoriteBorder,
-} from "@mui/icons-material";
-import { Box, Stack, Typography, Stepper, Step, StepLabel, Button, Paper, StatusBadge } from "@/lib/mui";
+import { CheckCircle, Cancel, Warning, FavoriteBorder } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Stepper, Step, StepLabel, Button, Paper, StatusBadge } from "@/lib/mui/components";
 import { getAvailableTransitions, STATUS_CONFIG } from "@/lib/utils";
 import type { AppointmentStatus } from "@/types";
 

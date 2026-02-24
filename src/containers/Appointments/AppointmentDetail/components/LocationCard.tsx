@@ -1,7 +1,7 @@
 "use client";
 
-import { LocationOn, Phone, Email } from "@mui/icons-material";
-import { Box, Stack, Typography, Button } from "@/lib/mui";
+import { LocationOn, Phone, Email } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Button } from "@/lib/mui/components";
 import type { Clinic } from "@/types";
 
 interface LocationCardProps {

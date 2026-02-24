@@ -1,6 +1,6 @@
 import { Clinic } from "@/types";
-import { LocationOn, Phone, Email } from "@mui/icons-material";
-import { Paper, Typography, Stack } from "@/lib/mui";
+import { LocationOn, Phone, Email } from "@/lib/mui/icons";
+import { Paper, Typography, Stack } from "@/lib/mui/components";
 
 export default function PracticeLocation({ clinic }: { clinic: Clinic | undefined }) {
   if (!clinic) return null;

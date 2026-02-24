@@ -1,5 +1,5 @@
 import {Doctor} from "@/types";
-import {Paper, Typography} from "@/lib/mui";
+import {Paper, Typography} from "@/lib/mui/components";
 
 export default function AboutDoctor({doctor}: {doctor: Doctor}) {
   return (

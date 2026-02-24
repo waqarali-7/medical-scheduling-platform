@@ -1,9 +1,11 @@
 "use client";
 
-import { Box, Grid, Stack } from "@/lib/mui";
+import { Box, Grid, Stack } from "@/lib/mui/components";
 import type { Appointment, Patient } from "@/types";
-import { PatientListHeader, PatientCard, EmptyState } from "./components";
+import { PatientListHeader, PatientCard } from "./components";
 import type { PatientListProps } from "@/containers/Patients/types";
+import { EmptyState } from "@/components/common";
+import { People } from "@/lib/mui/icons";
 
 export default function PatientList({ patients, appointments }: PatientListProps) {
   return (
@@ -12,7 +14,7 @@ export default function PatientList({ patients, appointments }: PatientListProps
         <PatientListHeader count={patients.length} />
 
         {patients.length === 0 ? (
-          <EmptyState />
+          <EmptyState element={<People sx={{ fontSize: 48 }} />} primary="No patients found." />
         ) : (
           <Grid container spacing={3}>
             {patients.map((patient: Patient) => {

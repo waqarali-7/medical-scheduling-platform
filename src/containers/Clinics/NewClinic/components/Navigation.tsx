@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowBack, ArrowForward, Check } from "@mui/icons-material";
-import { Stack, Button, Box, Typography, IconButton } from "@/lib/mui";
+import { ArrowBack, ArrowForward, Check } from "@/lib/mui/icons";
+import { Stack, Button, Box, Typography, IconButton } from "@/lib/mui/components";
 
 interface StepNavigationProps {
   step: number;

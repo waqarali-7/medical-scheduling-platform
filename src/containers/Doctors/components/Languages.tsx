@@ -1,4 +1,4 @@
-import { Paper, Typography, Stack, Chip } from "@/lib/mui";
+import { Paper, Typography, Stack, Chip } from "@/lib/mui/components";
 
 export default function Languages({ languages }: { languages: string[] }) {
   if (languages.length === 0) return null;

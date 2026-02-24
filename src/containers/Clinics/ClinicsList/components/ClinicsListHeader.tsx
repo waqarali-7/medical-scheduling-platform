@@ -1,7 +1,8 @@
-import { Box, Button, Stack, Typography } from "@/lib/mui";
+import { Box, Button, Stack, Typography } from "@/lib/mui/components";
 import { User } from "@/types";
-import { Add } from "@mui/icons-material";
+import { Add } from "@/lib/mui/icons";
 import Link from "next/link";
+import { Role } from "@/lib/enums";
 
 export function ClinicsListHeader({ user, clinicsCount }: { user: User | null; clinicsCount: number }) {
   return (
@@ -20,7 +21,7 @@ export function ClinicsListHeader({ user, clinicsCount }: { user: User | null; c
           {clinicsCount} location{clinicsCount !== 1 ? "s" : ""} across Germany
         </Typography>
       </Box>
-      {user?.role === "CLINIC_ADMIN" && (
+      {user?.role === Role.CLINIC_ADMIN && (
         <Button component={Link} href="/clinics/new" variant="primary" startIcon={<Add />}>
           Add Clinic
         </Button>

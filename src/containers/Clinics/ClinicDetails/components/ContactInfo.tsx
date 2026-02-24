@@ -1,5 +1,5 @@
-import { Stack, Typography, Box } from "@/lib/mui";
-import { LocationOn, Phone, Email, Language } from "@mui/icons-material";
+import { Stack, Typography, Box } from "@/lib/mui/components";
+import { LocationOn, Phone, Email, Language } from "@/lib/mui/icons";
 import Link from "next/link";
 import type { HeaderProps } from "../types";
 

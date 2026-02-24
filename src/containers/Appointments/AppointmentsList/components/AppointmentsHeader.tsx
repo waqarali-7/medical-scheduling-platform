@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { Add } from "@mui/icons-material";
-import { Box, Typography, Stack, Button } from "@/lib/mui";
+import { Add } from "@/lib/mui/icons";
+import { Box, Typography, Stack, Button } from "@/lib/mui/components";
 import { AppointmentsHeaderProps } from "../types";
+import { Role } from "@/lib/enums";
 
 export function AppointmentsHeader({ totalCount, confirmedCount, userRole }: AppointmentsHeaderProps) {
   return (
@@ -22,7 +23,7 @@ export function AppointmentsHeader({ totalCount, confirmedCount, userRole }: App
           {totalCount} total appointments · {confirmedCount} confirmed
         </Typography>
       </Box>
-      {userRole === "PATIENT" && (
+      {userRole === Role.PATIENT && (
         <Button component={Link} href="/appointments/new" variant="primary" startIcon={<Add />}>
           New Appointment
         </Button>

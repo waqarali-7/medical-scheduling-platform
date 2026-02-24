@@ -1,8 +1,8 @@
-import { Button } from "@/lib/mui";
 import Link from "next/link";
 import { DashboardStats, User } from "@/types";
-import { Add, ArrowForward } from "@mui/icons-material";
-import { Card, Box, Typography, Stack } from "@/lib/mui";
+import { Add, ArrowForward } from "@/lib/mui/icons";
+import { Card, Box, Button, Typography, Stack } from "@/lib/mui/components";
+import { Role } from "@/lib/enums";
 
 interface HeaderProps {
   currentUser: User | null;
@@ -28,17 +28,12 @@ export default function Header({ currentUser, stats }: HeaderProps) {
           today. {stats.pendingAppointments > 0 && <span>{stats.pendingAppointments} pending confirmation.</span>}
         </Typography>
         <Stack direction="row" spacing={2} sx={{ mt: 3 }}>
-          {currentUser?.role === "PATIENT" && (
+          {currentUser?.role === Role.PATIENT && (
             <Button component={Link} href="/appointments/new" variant="primary" startIcon={<Add />}>
               Book Appointment
             </Button>
           )}
-          <Button
-            component={Link}
-            href="/appointments"
-            variant="outline"
-            startIcon={<ArrowForward fontSize="small" />}
-          >
+          <Button component={Link} href="/appointments" variant="outline" endIcon={<ArrowForward fontSize="small" />}>
             View Schedule
           </Button>
         </Stack>

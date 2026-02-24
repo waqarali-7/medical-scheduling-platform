@@ -2,7 +2,7 @@
 
 import { useReducer } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Stepper, Step, StepLabel, Card } from "@/lib/mui";
+import { Box, Stepper, Step, StepLabel, Card } from "@/lib/mui/components";
 import type { NewClinicFormData } from "./types";
 import { STEP_LABELS } from "./constants";
 import { validateStep1, validateStep2, validateStep3, validateStep4 } from "./validation";

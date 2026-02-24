@@ -1,6 +1,6 @@
 import {Appointment, Doctor} from "@/types";
-import {ChevronRight} from "@mui/icons-material";
-import { Paper, Stack, Typography, Button, Divider, Box, StatusBadge } from "@/lib/mui";
+import {ChevronRight} from "@/lib/mui/icons";
+import { Paper, Stack, Typography, Button, Divider, Box, StatusBadge } from "@/lib/mui/components";
 import Link from "next/link";
 
 export default function RecentAppointments({appointments, doctor}: {appointments: Appointment[]; doctor: Doctor}) {

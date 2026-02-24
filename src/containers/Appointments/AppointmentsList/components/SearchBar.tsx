@@ -1,7 +1,7 @@
 "use client";
 
-import { Search } from "@mui/icons-material";
-import { TextField, InputAdornment } from "@/lib/mui";
+import { Search } from "@/lib/mui/icons";
+import { TextField, InputAdornment } from "@/lib/mui/components";
 import { SearchBarProps } from "../types";
 
 export function SearchBar({ value, onChange }: SearchBarProps) {

@@ -1,7 +1,7 @@
 "use client";
 
-import { Cancel } from "@mui/icons-material";
-import { Box, Stack, Typography, Paper, TextField, Button, Dialog } from "@/lib/mui";
+import { Cancel } from "@/lib/mui/icons";
+import { Box, Stack, Typography, Paper, TextField, Button, Dialog } from "@/lib/mui/components";
 
 interface CancelDialogProps {
   open: boolean;
@@ -51,7 +51,7 @@ export default function CancelDialog({
         <TextField
           fullWidth
           multiline
-          rows={3}
+          rows={2}
           label="Reason for cancellation"
           value={cancelReason}
           onChange={(e) => onCancelReasonChange(e.target.value)}

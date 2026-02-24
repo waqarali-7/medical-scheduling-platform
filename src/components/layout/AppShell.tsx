@@ -3,7 +3,7 @@
 import { useSidebarState } from "@/hooks/sideBarState/useSidebarState";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { Box } from "@/lib/mui";
+import { Box } from "@/lib/mui/components";
 
 interface AppShellProps {
   children: React.ReactNode;

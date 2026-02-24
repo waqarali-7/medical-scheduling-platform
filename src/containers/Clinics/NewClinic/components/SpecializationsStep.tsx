@@ -1,7 +1,7 @@
 "use client";
 
-import { LocalHospital } from "@mui/icons-material";
-import { Stack, Typography, Paper, Chip, Box } from "@/lib/mui";
+import { LocalHospital } from "@/lib/mui/icons";
+import { Stack, Typography, Paper, Chip, Box } from "@/lib/mui/components";
 import { SPECIALIZATION_OPTIONS } from "../constants";
 import type { SpecializationsStepProps } from "../types";
 

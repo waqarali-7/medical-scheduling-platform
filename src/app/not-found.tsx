@@ -1,8 +1,7 @@
 "use client";
 
-import { Box, Typography } from "@mui/material";
-import { SentimentDissatisfied } from "@mui/icons-material";
-import { Button } from "@/lib/mui";
+import { Button, Box, Typography } from "@/lib/mui/components";
+import { SentimentDissatisfied } from "@/lib/mui/icons";
 import Link from "next/link";
 
 export default function Custom404() {

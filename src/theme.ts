@@ -19,7 +19,7 @@ export const getAppTheme = (mode: PaletteMode) => {
 
   return createTheme({
     shape: {
-      borderRadius: 16,
+      borderRadius: 8,
     },
 
     palette: {

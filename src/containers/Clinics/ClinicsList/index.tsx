@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Stack } from "@/lib/mui";
+import { Box, Stack } from "@/lib/mui/components";
 import { ClinicCard, ClinicsListHeader } from "./components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import { ClinicsListProps } from "./types";

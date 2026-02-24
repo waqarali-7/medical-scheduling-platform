@@ -3,8 +3,8 @@
 import {useReducer} from "react";
 import {useRouter} from "next/navigation";
 import {useForm, Controller} from "react-hook-form";
-import {Box, Input, Typography, Alert, InputAdornment, IconButton, Stack, Button, Card, Grid, MenuItem} from "@/lib/mui";
-import {Email, Lock, Visibility, VisibilityOff, CheckCircle, Cancel, ArrowForward, PersonOutline, Person, Phone} from "@mui/icons-material";
+import {Box, Input, Typography, Alert, InputAdornment, IconButton, Stack, Button, Card, Grid, MenuItem} from "@/lib/mui/components";
+import {Email, Lock, Visibility, VisibilityOff, CheckCircle, Cancel, ArrowForward, PersonOutline, Person, Phone} from "@/lib/mui/icons";
 import {createClient} from "@/lib/supabase/client";
 import {useThemeMode} from "@/context/ThemeContext";
 import {ThemeToggle, AuthHero, AuthDivider, AuthFooterNotice, SignInPrompt} from "@/components/auth";

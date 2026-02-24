@@ -1,7 +1,7 @@
 "use client";
 
-import { LocalHospital, Check, LocationOn, Star, Language } from "@mui/icons-material";
-import { Box, Stack, Typography, TextField, Grid, Paper, Chip, Avatar } from "@/lib/mui";
+import { LocalHospital, Check, LocationOn, Star, Language } from "@/lib/mui/icons";
+import { Box, Stack, Typography, TextField, Grid, Paper, Chip, Avatar } from "@/lib/mui/components";
 import { formatCurrency } from "@/lib/utils";
 import type { Doctor, Clinic } from "@/types";
 

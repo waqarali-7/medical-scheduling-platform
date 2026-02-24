@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
-import { Box, Grid, Card, Stack } from "@/lib/mui";
+import { Box, Grid, Card, Stack } from "@/lib/mui/components";
 import { DAYS } from "./constants";
 import { ClinicDetailProps } from "./types";
 import { Header, StatusBanner, ContactInfo, DoctorsList, Specializations, OpeningHours } from "./components";

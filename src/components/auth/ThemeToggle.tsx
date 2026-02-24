@@ -1,5 +1,5 @@
-import { Tooltip, IconButton } from "@/lib/mui";
-import { Brightness4, Brightness7 } from "@mui/icons-material";
+import { Tooltip, IconButton } from "@/lib/mui/components";
+import { Brightness4, Brightness7 } from "@/lib/mui/icons";
 
 export interface ThemeToggleProps {
   mode: "light" | "dark";

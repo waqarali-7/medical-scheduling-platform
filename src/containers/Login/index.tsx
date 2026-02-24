@@ -4,18 +4,8 @@ import Link from "next/link";
 import { useReducer, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
-import {
-  Box,
-  Input,
-  Typography,
-  Alert,
-  InputAdornment,
-  IconButton,
-  Stack,
-  Button,
-  Card,
-} from "@/lib/mui";
-import { Email, Lock, Visibility, VisibilityOff, ArrowForward } from "@mui/icons-material";
+import { Box, Input, Typography, Alert, InputAdornment, IconButton, Stack, Button, Card } from "@/lib/mui/components";
+import { Email, Lock, Visibility, VisibilityOff, ArrowForward } from "@/lib/mui/icons";
 import { createClient } from "@/lib/supabase/client";
 import { useThemeMode } from "@/context/ThemeContext";
 import { ThemeToggle, AuthHero, AuthDivider, AuthFooterNotice, SignUpPrompt } from "@/components/auth";
