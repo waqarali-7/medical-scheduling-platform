@@ -57,7 +57,6 @@ export default function OpeningHoursStep({ openingHours, onChange }: OpeningHour
                   <Stack direction="row" spacing={1.5} flex={1} alignItems="center">
                     <TextField
                       type="time"
-                      label="From"
                       value={hours.from}
                       onChange={(e) => handleTimeChange(day, "from", e.target.value)}
                       size="small"
@@ -68,7 +67,6 @@ export default function OpeningHoursStep({ openingHours, onChange }: OpeningHour
                     </Typography>
                     <TextField
                       type="time"
-                      label="To"
                       value={hours.to}
                       onChange={(e) => handleTimeChange(day, "to", e.target.value)}
                       size="small"

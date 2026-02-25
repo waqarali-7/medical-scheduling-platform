@@ -41,7 +41,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         {initials}
       </MuiAvatar>
     );
-  }
+  },
 );
 
 Avatar.displayName = "Avatar";

@@ -196,11 +196,10 @@ export interface BookingStep {
 }
 
 export interface BookingFormData {
-  doctorId?: string;
-  clinicId?: string;
-  date?: string;
-  timeSlot?: TimeSlot;
-  type?: AppointmentType;
-  reason?: string;
+  selectedDoctor: Doctor | null;
+  selectedDate: string;
+  selectedSlot: TimeSlot | null;
+  selectedType: AppointmentType | "";
+  reason: string;
   notes?: string;
 }

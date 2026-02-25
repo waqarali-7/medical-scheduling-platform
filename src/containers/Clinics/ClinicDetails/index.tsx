@@ -1,12 +1,34 @@
 "use client";
 
-import { useMemo } from "react";
-import { Box, Grid, Card, Stack } from "@/lib/mui/components";
+import { useMemo, useState } from "react";
+import { Box, Grid, Card, Stack, Button } from "@/lib/mui/components";
 import { DAYS } from "./constants";
 import { ClinicDetailProps } from "./types";
-import { Header, StatusBanner, ContactInfo, DoctorsList, Specializations, OpeningHours } from "./components";
+import {
+  Header,
+  StatusBanner,
+  ContactInfo,
+  DoctorsList,
+  Specializations,
+  OpeningHours,
+  LinkDoctorsDialog,
+} from "./components";
+import type { Doctor } from "@/types";
+import { PersonAdd } from "@/lib/mui/icons";
 
-export default function ClinicDetail({ clinic, doctors }: ClinicDetailProps) {
+interface ClinicDetailExtendedProps extends ClinicDetailProps {
+  unlinkedDoctors: Doctor[];
+  canManage?: boolean;
+}
+
+export default function ClinicDetail({
+  clinic,
+  doctors,
+  unlinkedDoctors,
+  canManage = false,
+}: ClinicDetailExtendedProps) {
+  const [linkDialogOpen, setLinkDialogOpen] = useState(false);
+
   const clinicDoctors = useMemo(() => doctors.filter((d) => d.clinicId === clinic.id), [doctors, clinic.id]);
 
   const today = useMemo(() => {
@@ -18,6 +40,18 @@ export default function ClinicDetail({ clinic, doctors }: ClinicDetailProps) {
   return (
     <Box sx={{ py: 4, px: 2 }}>
       <Header clinic={clinic} />
+      {canManage && (
+        <Box sx={{ mb: 3 }}>
+          <Button
+            variant="primary"
+            startIcon={<PersonAdd />}
+            onClick={() => setLinkDialogOpen(true)}
+            disabled={unlinkedDoctors.length === 0}
+          >
+            Link Doctors ({unlinkedDoctors.length} available)
+          </Button>
+        </Box>
+      )}
       <StatusBanner todayHours={todayHours} />
 
       <Grid container spacing={3}>
@@ -26,7 +60,7 @@ export default function ClinicDetail({ clinic, doctors }: ClinicDetailProps) {
             <Card sx={{ p: 3 }}>
               <ContactInfo clinic={clinic} />
             </Card>
-            <DoctorsList doctors={clinicDoctors} />
+            <DoctorsList doctors={clinicDoctors} clinicId={clinic.id} canManage={canManage} />
             <Specializations specializations={clinic.specializations} />
           </Stack>
         </Grid>
@@ -35,6 +69,13 @@ export default function ClinicDetail({ clinic, doctors }: ClinicDetailProps) {
           <OpeningHours openingHours={clinic.openingHours} today={today} />
         </Grid>
       </Grid>
+
+      <LinkDoctorsDialog
+        open={linkDialogOpen}
+        onClose={() => setLinkDialogOpen(false)}
+        clinicId={clinic.id}
+        unlinkedDoctors={unlinkedDoctors}
+      />
     </Box>
   );
 }

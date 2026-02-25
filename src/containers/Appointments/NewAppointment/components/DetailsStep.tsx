@@ -8,7 +8,7 @@ import type { AppointmentType } from "@/types";
 interface DetailsStepProps {
   selectedType: AppointmentType | "";
   reason: string;
-  notes: string;
+  notes: string | undefined;
   onTypeSelect: (type: AppointmentType) => void;
   onReasonChange: (value: string) => void;
   onNotesChange: (value: string) => void;
@@ -48,7 +48,6 @@ export default function DetailsStep({
                   cursor: "pointer",
                   border: 2,
                   borderColor: selectedType === type.value ? "primary.main" : "divider",
-                  bgcolor: selectedType === type.value ? "primary.lighter" : "background.paper",
                   transition: "border-color 0.2s, background-color 0.2s",
                   "&:hover": { borderColor: "primary.light" },
                 }}

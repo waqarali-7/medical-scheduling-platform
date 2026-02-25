@@ -1,33 +1,12 @@
 "use client";
 
-import { CheckCircle, Cancel, Warning, FavoriteBorder } from "@/lib/mui/icons";
+import { CheckCircle, FavoriteBorder } from "@/lib/mui/icons";
 import { Box, Stack, Typography, Stepper, Step, StepLabel, Button, Paper, StatusBadge } from "@/lib/mui/components";
 import { getAvailableTransitions, STATUS_CONFIG } from "@/lib/utils";
 import type { AppointmentStatus } from "@/types";
-
-const STATE_ORDER: AppointmentStatus[] = ["PENDING", "CONFIRMED", "COMPLETED"];
-
-const TRANSITION_LABELS: Record<AppointmentStatus, string> = {
-  CONFIRMED: "Confirm Appointment",
-  CANCELLED: "Cancel Appointment",
-  COMPLETED: "Mark as Completed",
-  NO_SHOW: "Mark as No-Show",
-  PENDING: "Reset to Pending",
-};
-
-const TRANSITION_ICONS: Partial<Record<AppointmentStatus, React.ComponentType>> = {
-  CONFIRMED: CheckCircle,
-  CANCELLED: Cancel,
-  COMPLETED: CheckCircle,
-  NO_SHOW: Warning,
-};
-
-const TRANSITION_COLORS: Partial<Record<AppointmentStatus, "success" | "error" | "primary" | "default">> = {
-  CONFIRMED: "success",
-  CANCELLED: "error",
-  COMPLETED: "primary",
-  NO_SHOW: "default",
-};
+import { STATE_ORDER, TRANSITION_COLORS, TRANSITION_ICONS, TRANSITION_LABELS } from "../constants";
+import { useCurrentUser } from "@/context/CurrentUserContext";
+import { Role } from "@/lib/enums";
 
 interface StatusCardProps {
   currentStatus: AppointmentStatus;
@@ -35,7 +14,18 @@ interface StatusCardProps {
 }
 
 export default function StatusCard({ currentStatus, onTransition }: StatusCardProps) {
-  const availableTransitions = getAvailableTransitions(currentStatus);
+  const user = useCurrentUser();
+  const allTransitions = getAvailableTransitions(currentStatus);
+
+  let availableTransitions: AppointmentStatus[] = [];
+
+  if (user?.role === Role.DOCTOR) {
+    availableTransitions = allTransitions;
+  } else if (user?.role === Role.PATIENT) {
+    availableTransitions = allTransitions.includes("CANCELLED") ? ["CANCELLED"] : [];
+  } else {
+    availableTransitions = [];
+  }
   const isFinalState = currentStatus === "CANCELLED" || currentStatus === "COMPLETED" || currentStatus === "NO_SHOW";
 
   return (
@@ -94,7 +84,7 @@ export default function StatusCard({ currentStatus, onTransition }: StatusCardPr
       )}
 
       {isFinalState && (
-        <Paper sx={{ p: 2, bgcolor: "grey.50" }}>
+        <Paper sx={{ p: 2, bgcolor: "primary.main" }}>
           <Stack direction="row" spacing={1.5} alignItems="center">
             <CheckCircle color="disabled" fontSize="small" />
             <Typography variant="body2" color="text.secondary">

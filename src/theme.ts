@@ -180,10 +180,10 @@ export const getAppTheme = (mode: PaletteMode) => {
               background: isLight ? "#f1f5f9" : "#1e293b",
             },
             "&::-webkit-scrollbar-thumb": {
-              background: isLight ? "#cbd5e1" : "#475569",
+              background: `linear-gradient(135deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
               borderRadius: 5,
               "&:hover": {
-                background: isLight ? "#94a3b8" : "#64748b",
+                background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandSecondary} 100%)`,
               },
             },
           },
@@ -218,9 +218,9 @@ export const getAppTheme = (mode: PaletteMode) => {
             "&:hover": {
               transform: "translateY(-2px)",
               boxShadow: isLight
-                ? "0 12px 24px rgba(14,165,233,0.12), 0 0 0 1px rgba(14,165,233,0.08)"
+                ? `0 12px 24px ${alpha(brandPrimary, 0.12)}, 0 0 0 1px ${alpha(brandAccent, 0.08)}`
                 : "0 12px 24px rgba(0,0,0,0.5)",
-              borderColor: isLight ? alpha(brandPrimary, 0.2) : alpha(brandPrimary, 0.3),
+              borderColor: isLight ? alpha(brandPrimary, 0.2) : alpha(brandAccent, 0.3),
             },
           },
         },
@@ -260,11 +260,13 @@ export const getAppTheme = (mode: PaletteMode) => {
             },
           },
           containedSecondary: {
-            background: brandSecondary,
+            background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandSecondary} 100%)`,
             color: "#ffffff",
+            boxShadow: `0 4px 14px ${alpha(brandAccent, 0.3)}`,
             "&:hover": {
-              background: "#0f766e",
               transform: "translateY(-2px)",
+              boxShadow: `0 8px 20px ${alpha(brandAccent, 0.4)}`,
+              background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandSecondary} 100%)`,
             },
           },
           outlined: {
@@ -273,14 +275,15 @@ export const getAppTheme = (mode: PaletteMode) => {
             color: brandPrimary,
             "&:hover": {
               borderWidth: 1.5,
-              borderColor: brandPrimary,
-              backgroundColor: alpha(brandPrimary, 0.04),
+              borderColor: brandAccent,
+              backgroundColor: alpha(brandAccent, 0.04),
               transform: "translateY(-1px)",
             },
           },
           text: {
             "&:hover": {
               backgroundColor: alpha(brandPrimary, 0.06),
+              background: `linear-gradient(135deg, ${alpha(brandPrimary, 0.04)} 0%, ${alpha(brandAccent, 0.08)} 100%)`,
             },
           },
         },
@@ -293,6 +296,7 @@ export const getAppTheme = (mode: PaletteMode) => {
             "&:hover": {
               transform: "scale(1.05)",
               backgroundColor: alpha(brandPrimary, 0.08),
+              background: `radial-gradient(circle, ${alpha(brandAccent, 0.12)} 0%, ${alpha(brandPrimary, 0.08)} 100%)`,
             },
           },
         },
@@ -314,10 +318,15 @@ export const getAppTheme = (mode: PaletteMode) => {
             "&:hover": {
               borderWidth: 1.5,
               transform: "translateY(-1px)",
+              borderColor: brandAccent,
+              backgroundColor: alpha(brandAccent, 0.04),
             },
           },
+          colorPrimary: {
+            background: `linear-gradient(135deg, ${brandPrimary} 0%, ${brandSecondary} 100%)`,
+          },
           colorSecondary: {
-            background: `linear-gradient(135deg, ${brandAccent} 0%, ${alpha(brandAccent, 0.8)} 100%)`,
+            background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandPrimary} 100%)`,
             color: "#ffffff",
             border: "none",
           },
@@ -336,13 +345,14 @@ export const getAppTheme = (mode: PaletteMode) => {
             transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
             "&:hover": {
               "& .MuiOutlinedInput-notchedOutline": {
-                borderColor: alpha(brandPrimary, 0.4),
+                borderColor: alpha(brandAccent, 0.4),
               },
             },
             "&.Mui-focused": {
               "& .MuiOutlinedInput-notchedOutline": {
                 borderWidth: 2,
                 borderColor: brandPrimary,
+                boxShadow: `0 0 0 3px ${alpha(brandAccent, 0.1)}`,
               },
             },
           },
@@ -357,7 +367,7 @@ export const getAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             "&.Mui-focused": {
-              color: brandPrimary,
+              color: brandAccent,
             },
           },
         },
@@ -388,16 +398,17 @@ export const getAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             transition: "all 200ms cubic-bezier(0.4, 0, 0.2, 1)",
-
             "&:hover": {
               backgroundColor: isLight ? alpha(brandPrimary, 0.06) : alpha(brandPrimary, 0.12),
+              background: `linear-gradient(90deg, ${alpha(brandPrimary, 0.08)} 0%, ${alpha(brandAccent, 0.04)} 100%)`,
             },
-
             "&.Mui-selected": {
               backgroundColor: isLight ? alpha(brandPrimary, 0.1) : alpha(brandPrimary, 0.2),
-
+              background: `linear-gradient(90deg, ${alpha(brandPrimary, 0.12)} 0%, ${alpha(brandAccent, 0.08)} 100%)`,
+              borderLeft: `3px solid ${brandAccent}`,
               "&:hover": {
                 backgroundColor: isLight ? alpha(brandPrimary, 0.12) : alpha(brandPrimary, 0.25),
+                background: `linear-gradient(90deg, ${alpha(brandPrimary, 0.14)} 0%, ${alpha(brandAccent, 0.1)} 100%)`,
               },
             },
           },
@@ -432,6 +443,7 @@ export const getAppTheme = (mode: PaletteMode) => {
           standardInfo: {
             backgroundColor: isLight ? "#dbeafe" : alpha("#3b82f6", 0.15),
             color: isLight ? "#1e40af" : "#93c5fd",
+            borderLeft: `4px solid ${brandAccent}`,
           },
         },
       },
@@ -440,9 +452,10 @@ export const getAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             "& .MuiSwitch-switchBase.Mui-checked": {
-              color: brandPrimary,
+              color: brandAccent,
               "& + .MuiSwitch-track": {
-                backgroundColor: brandPrimary,
+                backgroundColor: brandAccent,
+                background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandPrimary} 100%)`,
               },
             },
           },
@@ -454,9 +467,10 @@ export const getAppTheme = (mode: PaletteMode) => {
           root: {
             borderRadius: 8,
             height: 8,
+            backgroundColor: isLight ? alpha(brandPrimary, 0.1) : alpha(brandPrimary, 0.2),
           },
           bar: {
-            background: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
+            background: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 50%, ${brandSecondary} 100%)`,
           },
         },
       },
@@ -465,17 +479,14 @@ export const getAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           tooltip: {
             backgroundColor: isLight ? alpha("#0f172a", 0.92) : alpha("#1e293b", 0.92),
-
             color: isLight ? "#ffffff" : "#f8fafc",
-
             fontSize: "0.875rem",
             fontWeight: 500,
             borderRadius: 8,
             padding: "8px 12px",
-
             boxShadow: isLight ? "0 8px 24px rgba(15,23,42,0.12)" : "0 8px 24px rgba(0,0,0,0.5)",
+            borderLeft: `3px solid ${brandAccent}`,
           },
-
           arrow: {
             color: isLight ? alpha("#0f172a", 0.92) : alpha("#1e293b", 0.92),
           },
@@ -486,6 +497,8 @@ export const getAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           paper: {
             backgroundImage: "none",
+            borderTop: `3px solid`,
+            borderImage: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 50%, ${brandSecondary} 100%) 1`,
           },
         },
       },
@@ -503,12 +516,117 @@ export const getAppTheme = (mode: PaletteMode) => {
         styleOverrides: {
           root: {
             boxShadow: `0 4px 14px ${alpha(brandAccent, 0.3)}`,
-            background: `linear-gradient(135deg, ${brandAccent} 0%, ${alpha(brandAccent, 0.8)} 100%)`,
+            background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandPrimary} 100%)`,
             color: "#ffffff",
             "&:hover": {
               transform: "scale(1.05)",
               boxShadow: `0 6px 20px ${alpha(brandAccent, 0.4)}`,
+              background: `linear-gradient(135deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
             },
+          },
+        },
+      },
+
+      MuiCircularProgress: {
+        styleOverrides: {
+          root: {
+            "& .MuiCircularProgress-circle": {
+              strokeLinecap: "round",
+            },
+          },
+          colorPrimary: {
+            color: brandPrimary,
+          },
+        },
+      },
+
+      MuiBadge: {
+        styleOverrides: {
+          badge: {
+            background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandPrimary} 100%)`,
+            color: "#ffffff",
+            fontWeight: 600,
+          },
+        },
+      },
+
+      MuiStepper: {
+        styleOverrides: {
+          root: {
+            "& .MuiStepConnector-line": {
+              borderColor: isLight ? alpha(brandPrimary, 0.2) : alpha(brandPrimary, 0.3),
+            },
+            "& .Mui-completed .MuiStepConnector-line": {
+              background: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
+              borderWidth: 2,
+              borderStyle: "solid",
+              borderImageSlice: 1,
+              borderImageSource: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
+            },
+          },
+        },
+      },
+
+      MuiStepIcon: {
+        styleOverrides: {
+          root: {
+            "&.Mui-active": {
+              color: brandAccent,
+            },
+            "&.Mui-completed": {
+              color: brandPrimary,
+            },
+          },
+        },
+      },
+
+      MuiSlider: {
+        styleOverrides: {
+          root: {
+            "& .MuiSlider-thumb": {
+              background: `linear-gradient(135deg, ${brandAccent} 0%, ${brandPrimary} 100%)`,
+            },
+            "& .MuiSlider-track": {
+              background: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
+              border: "none",
+            },
+            "& .MuiSlider-rail": {
+              backgroundColor: isLight ? alpha(brandPrimary, 0.1) : alpha(brandPrimary, 0.2),
+            },
+          },
+        },
+      },
+
+      MuiTabs: {
+        styleOverrides: {
+          indicator: {
+            background: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 100%)`,
+            height: 3,
+          },
+        },
+      },
+
+      MuiTab: {
+        styleOverrides: {
+          root: {
+            textTransform: "none",
+            fontWeight: 500,
+            "&.Mui-selected": {
+              color: brandAccent,
+              fontWeight: 600,
+            },
+            "&:hover": {
+              background: `linear-gradient(180deg, ${alpha(brandPrimary, 0.04)} 0%, ${alpha(brandAccent, 0.08)} 100%)`,
+            },
+          },
+        },
+      },
+
+      MuiAvatar: {
+        styleOverrides: {
+          colorDefault: {
+            background: `linear-gradient(135deg, ${brandPrimary} 50%, ${alpha(brandSecondary, 0.5)} 525%, ${alpha(brandAccent, 0.8)} 100%)`,
+            color: "#ffffff",
           },
         },
       },

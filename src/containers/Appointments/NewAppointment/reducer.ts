@@ -1,41 +1,41 @@
-import type { NewClinicFormData } from "./types";
-import { DEFAULT_OPENING_HOURS } from "./constants";
+import { BookingFormData } from "@/types";
 
-export interface ClinicState {
-  formData: NewClinicFormData;
+export interface AppointmentState {
+  formData: BookingFormData;
   step: number;
   isSubmitting: boolean;
+  searchSpec: string;
   error: string | null;
 }
 
-export const initialState: ClinicState = {
-  formData: {
-    name: "",
-    phone: "",
-    email: "",
-    website: "",
-    street: "",
-    postalCode: "",
-    city: "",
-    state: "",
-    openingHours: DEFAULT_OPENING_HOURS,
-    specializations: [],
-  },
+export const initialFormData: BookingFormData = {
+  selectedDoctor: null,
+  selectedDate: "",
+  selectedSlot: null,
+  selectedType: "",
+  reason: "",
+  notes: "",
+};
+
+export const initialState: AppointmentState = {
+  formData: initialFormData,
   step: 0,
   isSubmitting: false,
+  searchSpec: "",
   error: null,
 };
 
 type Action =
-  | { type: "SET_FIELD"; field: keyof NewClinicFormData; value: NewClinicFormData[keyof NewClinicFormData] }
+  | { type: "SET_FIELD"; field: keyof BookingFormData; value: BookingFormData[keyof BookingFormData] }
   | { type: "SET_STEP"; step: number }
   | { type: "NEXT_STEP" }
   | { type: "PREV_STEP" }
   | { type: "SET_SUBMITTING"; isSubmitting: boolean }
+  | { type: "SET_SEARCH"; searchSpec: string }
   | { type: "SET_ERROR"; error: string | null }
   | { type: "RESET" };
 
-export function clinicReducer(state: ClinicState, action: Action): ClinicState {
+export function appointmentReducer(state: AppointmentState, action: Action): AppointmentState {
   switch (action.type) {
     case "SET_FIELD":
       return {
@@ -55,13 +55,19 @@ export function clinicReducer(state: ClinicState, action: Action): ClinicState {
     case "NEXT_STEP":
       return {
         ...state,
-        step: Math.min(4, state.step + 1),
+        step: Math.min(3, state.step + 1),
       };
 
     case "PREV_STEP":
       return {
         ...state,
         step: Math.max(0, state.step - 1),
+      };
+
+    case "SET_SEARCH":
+      return {
+        ...state,
+        searchSpec: action.searchSpec,
       };
 
     case "SET_SUBMITTING":

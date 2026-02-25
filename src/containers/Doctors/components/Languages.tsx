@@ -10,7 +10,7 @@ export default function Languages({ languages }: { languages: string[] }) {
       </Typography>
       <Stack direction="row" spacing={1} flexWrap="wrap">
         {languages.map((lang) => (
-          <Chip key={lang} label={lang} size="small" color="primary" variant="outlined" />
+          <Chip key={lang} label={lang} size="small" color="secondary" />
         ))}
       </Stack>
     </Paper>

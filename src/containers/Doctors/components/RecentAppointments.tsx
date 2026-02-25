@@ -1,12 +1,12 @@
-import {Appointment, Doctor} from "@/types";
-import {ChevronRight} from "@/lib/mui/icons";
+import { Appointment, Doctor } from "@/types";
+import { ChevronRight } from "@/lib/mui/icons";
 import { Paper, Stack, Typography, Button, Divider, Box, StatusBadge } from "@/lib/mui/components";
 import Link from "next/link";
 
-export default function RecentAppointments({appointments, doctor}: {appointments: Appointment[]; doctor: Doctor}) {
+export default function RecentAppointments({ appointments, doctor }: { appointments: Appointment[]; doctor: Doctor }) {
   return (
     appointments?.length > 0 && (
-      <Paper sx={{p: 3}}>
+      <Paper sx={{ p: 3 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
           <Typography variant="subtitle2" color="text.secondary" fontWeight={700}>
             Recent Appointments
@@ -28,7 +28,7 @@ export default function RecentAppointments({appointments, doctor}: {appointments
                   px: 1,
                   py: 1.5,
                   borderRadius: 1,
-                  "&:hover": {bgcolor: "grey.50", cursor: "pointer"},
+                  "&:hover": { cursor: "pointer" },
                 }}
               >
                 <Box>

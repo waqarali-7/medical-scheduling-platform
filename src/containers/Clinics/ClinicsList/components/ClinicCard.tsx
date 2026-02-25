@@ -47,13 +47,8 @@ export function ClinicCard({ clinic, doctors }: ClinicCardProps) {
             </Box>
             <Chip
               label={todayHours.isOpen ? "Open" : "Closed"}
+              color={todayHours.isOpen ? "success" : "error"}
               size="small"
-              sx={{
-                bgcolor: todayHours.isOpen ? "success.light" : "error.light",
-                fontWeight: 600,
-                fontSize: "0.7rem",
-                height: 24,
-              }}
             />
           </Stack>
         </Box>
@@ -84,6 +79,7 @@ export function ClinicCard({ clinic, doctors }: ClinicCardProps) {
               <Chip
                 key={spec}
                 label={spec}
+                color="primary"
                 size="small"
                 sx={{
                   fontSize: "0.65rem",
@@ -94,6 +90,7 @@ export function ClinicCard({ clinic, doctors }: ClinicCardProps) {
             {clinic.specializations.length > 3 && (
               <Chip
                 label={`+${clinic.specializations.length - 3} more`}
+                color="secondary"
                 size="small"
                 sx={{
                   bgcolor: "grey.100",

@@ -18,6 +18,8 @@ export interface StatusBannerProps {
 
 export interface DoctorsListProps {
   doctors: Doctor[];
+  clinicId?: string;
+  canManage?: boolean;
 }
 
 export interface SpecializationsProps {

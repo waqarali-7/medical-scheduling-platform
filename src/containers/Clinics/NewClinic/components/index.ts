@@ -1,4 +1,3 @@
-export { ClinicCard } from "./ClinicCard";
 export { default as BasicInfoStep } from "./BasicInfoStep";
 export { default as LocationStep } from "./LocationStep";
 export { default as OpeningHoursStep } from "./OpeningHoursStep";

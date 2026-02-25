@@ -27,7 +27,7 @@ export default function DoctorSelectStep({
       !searchSpec ||
       d.specialization.toLowerCase().includes(searchSpec.toLowerCase()) ||
       d.firstName.toLowerCase().includes(searchSpec.toLowerCase()) ||
-      d.lastName.toLowerCase().includes(searchSpec.toLowerCase())
+      d.lastName.toLowerCase().includes(searchSpec.toLowerCase()),
   );
 
   return (
@@ -55,9 +55,9 @@ export default function DoctorSelectStep({
             return (
               <Grid
                 sx={{
-                  cursor: doc.isAvailable ? "pointer" : "not-allowed",
-                  opacity: doc.isAvailable ? 1 : 0.7,
-                  pointerEvents: doc.isAvailable ? "auto" : "none",
+                  cursor: doc.isAvailable && docClinic?.id ? "pointer" : "not-allowed",
+                  opacity: doc.isAvailable && docClinic?.id ? 1 : 0.7,
+                  pointerEvents: doc.isAvailable && docClinic?.id ? "auto" : "none",
                 }}
                 size={{ xs: 12, sm: 6 }}
                 key={doc.id}
@@ -69,11 +69,9 @@ export default function DoctorSelectStep({
                     cursor: "pointer",
                     border: 2,
                     borderColor: isSelected ? "primary.main" : "divider",
-                    bgcolor: isSelected ? "primary.lighter" : "background.paper",
                     transition: "border-color 0.2s, background-color 0.2s",
                     "&:hover": {
                       borderColor: "primary.light",
-                      bgcolor: isSelected ? "primary.lighter" : "action.hover",
                     },
                   }}
                 >
@@ -88,7 +86,20 @@ export default function DoctorSelectStep({
                       </Typography>
                     </Box>
                     {!doc.isAvailable && (
-                      <Chip label="Not accepting new patients" size="small" color="warning" sx={{ mt: 1, fontSize: "0.65rem" }} />
+                      <Chip
+                        label="Not accepting new patients"
+                        size="small"
+                        color="secondary"
+                        sx={{ mt: 1, fontSize: "0.65rem" }}
+                      />
+                    )}
+                    {doc.isAvailable && !docClinic && (
+                      <Chip
+                        label="Not linked with clinic"
+                        size="small"
+                        color="secondary"
+                        sx={{ mt: 1, fontSize: "0.65rem" }}
+                      />
                     )}
                     {isSelected && (
                       <Box
@@ -96,7 +107,7 @@ export default function DoctorSelectStep({
                           width: 24,
                           height: 24,
                           borderRadius: "50%",
-                          bgcolor: "primary.main",
+                          bgcolor: "secondary.main",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -119,7 +130,7 @@ export default function DoctorSelectStep({
                     </Typography>
                   </Stack>
 
-                  <Stack direction="row" spacing={0.5} alignItems="center">
+                  <Stack direction="row" spacing={0.5} height={25} alignItems="center">
                     <LocationOn sx={{ fontSize: 12, color: "text.disabled" }} />
                     <Typography variant="caption" color="text.secondary" noWrap>
                       {docClinic?.name}

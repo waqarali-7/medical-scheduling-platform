@@ -34,7 +34,7 @@ export function UpcomingAppointments({ appointments }: { appointments: Appointme
           primary="No upcoming appointments"
           cta={
             <Box sx={{ justifyContent: "center", display: "flex" }}>
-              <Button component={Link} href="/appointments/new" variant="ghost" startIcon={<Add />} sx={{ mt: 2 }}>
+              <Button component={Link} href="/appointments/new" variant="secondary" startIcon={<Add />} sx={{ mt: 2 }}>
                 Book your first appointment
               </Button>
             </Box>

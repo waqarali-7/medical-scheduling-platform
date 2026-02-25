@@ -7,7 +7,7 @@ export default function QuickBook({ doctor }: { doctor: Doctor }) {
   return (
     <Link href={`/appointments/new?doctor=${doctor.id}`} passHref>
       <Button
-        variant="primary"
+        variant="secondary"
         startIcon={<MedicalServices />}
         sx={{ width: "100%", py: 2, textTransform: "none" }}
       >

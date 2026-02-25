@@ -39,7 +39,6 @@ export default function ReviewStep({
           p: 3,
           border: 1,
           borderColor: "primary.light",
-          bgcolor: "primary.lighter",
         }}
       >
         <Typography

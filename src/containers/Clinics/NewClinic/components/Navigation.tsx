@@ -40,15 +40,14 @@ export function StepNavigation({
       </Button>
 
       {step < 4 ? (
-        <Button onClick={onNext} disabled={!canProceed} variant="primary" endIcon={<ArrowForward />}>
+        <Button onClick={onNext} disabled={!canProceed} variant="secondary" endIcon={<ArrowForward />}>
           Continue
         </Button>
       ) : (
         <Button
           onClick={onSubmit}
           disabled={isSubmitting}
-          variant="primary"
-          color="success"
+          variant="secondary"
           startIcon={isSubmitting ? null : <Check />}
         >
           {isSubmitting ? "Creating clinic..." : "Create Clinic"}

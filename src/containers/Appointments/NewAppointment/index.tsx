@@ -1,34 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useReducer } from "react";
 import { useRouter } from "next/navigation";
-import type { Doctor, AppointmentType, TimeSlot } from "@/types";
-import { Box, Stepper, Step, StepLabel, Card } from "@/lib/mui/components";
+import type { TimeSlot } from "@/types";
+import { Box, Stepper, Step, StepLabel, Card, Alert } from "@/lib/mui/components";
 import type { NewAppointmentProps } from "./types";
 import { STEP_LABELS, getAvailableDates } from "./constants";
-import {
-  PageHeader,
-  DoctorSelectStep,
-  DateTimeStep,
-  DetailsStep,
-  ReviewStep,
-  StepNavigation,
-} from "./components";
+import { PageHeader, DoctorSelectStep, DateTimeStep, DetailsStep, ReviewStep, StepNavigation } from "./components";
+import { appointmentReducer, initialState } from "./reducer";
+import { createAppointment } from "@/app/actions/createAppointment";
+import { useCurrentUser } from "@/context/CurrentUserContext";
 
 export default function NewAppointment({ doctors, clinics }: NewAppointmentProps) {
   const router = useRouter();
-  const [step, setStep] = useState(0);
-  const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-  const [selectedDate, setSelectedDate] = useState<string>("");
-  const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-  const [selectedType, setSelectedType] = useState<AppointmentType | "">("");
-  const [reason, setReason] = useState("");
-  const [notes, setNotes] = useState("");
-  const [searchSpec, setSearchSpec] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const user = useCurrentUser();
+  const [state, dispatch] = useReducer(appointmentReducer, initialState);
 
   const availableDates = getAvailableDates();
-  const clinic = selectedDoctor ? clinics.find((c) => c.id === selectedDoctor.clinicId) ?? null : null;
+  const clinic = state.formData.selectedDoctor
+    ? (clinics.find((c) => c.id === state.formData.selectedDoctor?.clinicId) ?? null)
+    : null;
 
   const dummySlots: TimeSlot[] = [
     "09:00",
@@ -43,34 +34,69 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
     "16:00",
   ].map((t, i) => ({
     id: `gen-${i}`,
-    doctorId: selectedDoctor?.id ?? "",
-    date: selectedDate,
+    doctorId: state.formData.selectedDoctor?.id ?? "",
+    date: state.formData.selectedDate,
     startTime: t,
     endTime: "",
     isAvailable: i !== 2 && i !== 5 && i !== 8,
     durationMinutes: 30,
   }));
 
-  const canProceedStep1 = !!selectedDoctor;
-  const canProceedStep2 = !!selectedDate && !!selectedSlot;
-  const canProceedStep3 = !!selectedType && reason.trim().length > 10;
-
-  const handleSubmit = () => {
-    setIsSubmitting(true);
-    setTimeout(() => router.push("/appointments?booked=true"), 1500);
-  };
+  const canProceedStep1 = !!state.formData.selectedDoctor;
+  const canProceedStep2 = !!state.formData.selectedDate && !!state.formData.selectedSlot;
+  const canProceedStep3 = !!state.formData.selectedType && state.formData.reason.trim().length > 10;
 
   const handleDateSelect = (date: string) => {
-    setSelectedDate(date);
-    setSelectedSlot(null);
+    dispatch({ type: "SET_FIELD", field: "selectedDate", value: date });
+    dispatch({ type: "SET_FIELD", field: "selectedSlot", value: null });
+  };
+
+  const handleSubmit = async () => {
+    if (!state.formData.selectedDoctor || !state.formData.selectedSlot || !state.formData.selectedType) return;
+
+    dispatch({ type: "SET_SUBMITTING", isSubmitting: true });
+    dispatch({ type: "SET_ERROR", error: null });
+
+    try {
+      const now = new Date().toISOString();
+
+      await createAppointment({
+        patientId: user?.id,
+        doctorId: state.formData.selectedDoctor.id,
+        clinicId: state.formData.selectedDoctor?.clinicId ?? "",
+        scheduledAt: `${state.formData.selectedDate}T${state.formData.selectedSlot.startTime}`,
+        durationMinutes: state.formData.selectedSlot.durationMinutes,
+        type: state.formData.selectedType,
+        reason: state.formData.reason,
+        notes: state.formData.notes,
+        status: "PENDING",
+        createdAt: now,
+        updatedAt: now,
+      });
+
+      router.push("/appointments?booked=true");
+    } catch (err) {
+      dispatch({
+        type: "SET_ERROR",
+        error: err instanceof Error ? err.message : "Failed to create appointment",
+      });
+    } finally {
+      dispatch({ type: "SET_SUBMITTING", isSubmitting: false });
+    }
   };
 
   return (
     <Box sx={{ maxWidth: 1400, mx: "auto", py: 3 }}>
       <PageHeader />
 
+      {state.error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => dispatch({ type: "SET_ERROR", error: null })}>
+          {state.error}
+        </Alert>
+      )}
+
       <Card sx={{ mb: 3 }}>
-        <Stepper activeStep={step} alternativeLabel>
+        <Stepper activeStep={state.step} alternativeLabel>
           {STEP_LABELS.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -80,60 +106,60 @@ export default function NewAppointment({ doctors, clinics }: NewAppointmentProps
       </Card>
 
       <Card sx={{ mb: 3 }}>
-        {step === 0 && (
+        {state.step === 0 && (
           <DoctorSelectStep
             doctors={doctors}
             clinics={clinics}
-            searchSpec={searchSpec}
-            onSearchChange={setSearchSpec}
-            selectedDoctor={selectedDoctor}
-            onSelectDoctor={setSelectedDoctor}
+            searchSpec={state.searchSpec}
+            onSearchChange={(v) => dispatch({ type: "SET_SEARCH", searchSpec: v })}
+            selectedDoctor={state.formData.selectedDoctor}
+            onSelectDoctor={(d) => dispatch({ type: "SET_FIELD", field: "selectedDoctor", value: d })}
           />
         )}
 
-        {step === 1 && (
+        {state.step === 1 && (
           <DateTimeStep
-            selectedDoctor={selectedDoctor}
+            selectedDoctor={state.formData.selectedDoctor}
             availableDates={availableDates}
             slots={dummySlots}
-            selectedDate={selectedDate}
-            selectedSlot={selectedSlot}
+            selectedDate={state.formData.selectedDate}
+            selectedSlot={state.formData.selectedSlot}
             onDateSelect={handleDateSelect}
-            onSlotSelect={setSelectedSlot}
+            onSlotSelect={(s) => dispatch({ type: "SET_FIELD", field: "selectedSlot", value: s })}
           />
         )}
 
-        {step === 2 && (
+        {state.step === 2 && (
           <DetailsStep
-            selectedType={selectedType}
-            reason={reason}
-            notes={notes}
-            onTypeSelect={setSelectedType}
-            onReasonChange={setReason}
-            onNotesChange={setNotes}
+            selectedType={state.formData.selectedType}
+            reason={state.formData.reason}
+            notes={state.formData.notes}
+            onTypeSelect={(t) => dispatch({ type: "SET_FIELD", field: "selectedType", value: t })}
+            onReasonChange={(r) => dispatch({ type: "SET_FIELD", field: "reason", value: r })}
+            onNotesChange={(n) => dispatch({ type: "SET_FIELD", field: "notes", value: n })}
           />
         )}
 
-        {step === 3 && selectedDoctor && (
+        {state.step === 3 && state.formData.selectedDoctor && (
           <ReviewStep
-            selectedDoctor={selectedDoctor}
+            selectedDoctor={state.formData.selectedDoctor}
             clinic={clinic}
-            selectedDate={selectedDate}
-            selectedSlot={selectedSlot}
-            selectedType={selectedType}
-            reason={reason}
+            selectedDate={state.formData.selectedDate}
+            selectedSlot={state.formData.selectedSlot}
+            selectedType={state.formData.selectedType}
+            reason={state.formData.reason}
           />
         )}
       </Card>
 
       <StepNavigation
-        step={step}
+        step={state.step}
         canProceedStep1={canProceedStep1}
         canProceedStep2={canProceedStep2}
         canProceedStep3={canProceedStep3}
-        isSubmitting={isSubmitting}
-        onBack={() => setStep((s) => Math.max(0, s - 1))}
-        onNext={() => setStep((s) => Math.min(3, s + 1))}
+        isSubmitting={state.isSubmitting}
+        onBack={() => dispatch({ type: "PREV_STEP" })}
+        onNext={() => dispatch({ type: "NEXT_STEP" })}
         onSubmit={handleSubmit}
       />
     </Box>

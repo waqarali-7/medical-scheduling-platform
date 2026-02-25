@@ -2,7 +2,7 @@
 
 import { useReducer } from "react";
 import { useRouter } from "next/navigation";
-import { Box, Stepper, Step, StepLabel, Card } from "@/lib/mui/components";
+import { Box, Stepper, Step, StepLabel, Card, Alert } from "@/lib/mui/components";
 import type { NewClinicFormData } from "./types";
 import { STEP_LABELS } from "./constants";
 import { validateStep1, validateStep2, validateStep3, validateStep4 } from "./validation";
@@ -16,6 +16,7 @@ import {
   StepNavigation,
 } from "./components";
 import { clinicReducer, initialState } from "./reducer";
+import { submitClinic } from "@/app/actions/submitClinic";
 
 export default function NewClinic() {
   const router = useRouter();
@@ -32,14 +33,36 @@ export default function NewClinic() {
 
   const handleSubmit = async () => {
     dispatch({ type: "SET_SUBMITTING", isSubmitting: true });
+    dispatch({ type: "SET_ERROR", error: null });
 
-    // TODO: Implement actual submission to Supabase
-    console.log("Submitting clinic:", state.formData);
+    try {
+      const result = await submitClinic({
+        name: state.formData.name,
+        phone: state.formData.phone,
+        email: state.formData.email,
+        website: state.formData.website || undefined,
+        street: state.formData.street,
+        postalCode: state.formData.postalCode,
+        city: state.formData.city,
+        state: state.formData.state,
+        openingHours: state.formData.openingHours,
+        specializations: state.formData.specializations,
+      });
 
-    setTimeout(() => {
+      if (result.success && result.data) {
+        dispatch({ type: "SET_SUBMITTING", isSubmitting: false });
+        router.push(`/clinics/${result.data.id}?created=true`);
+      } else {
+        dispatch({ type: "SET_ERROR", error: result.error || "Failed to create clinic" });
+        dispatch({ type: "SET_SUBMITTING", isSubmitting: false });
+      }
+    } catch (error) {
+      dispatch({
+        type: "SET_ERROR",
+        error: error instanceof Error ? error.message : "An unexpected error occurred",
+      });
       dispatch({ type: "SET_SUBMITTING", isSubmitting: false });
-      router.push("/clinics?created=true");
-    }, 1500);
+    }
   };
 
   const handleNext = () => {
@@ -53,6 +76,12 @@ export default function NewClinic() {
   return (
     <Box sx={{ maxWidth: 1400, mx: "auto", py: 3 }}>
       <PageHeader />
+
+      {state.error && (
+        <Alert severity="error" sx={{ mb: 3 }} onClose={() => dispatch({ type: "SET_ERROR", error: null })}>
+          {state.error}
+        </Alert>
+      )}
 
       <Card sx={{ mb: 3 }}>
         <Stepper activeStep={state.step} alternativeLabel>

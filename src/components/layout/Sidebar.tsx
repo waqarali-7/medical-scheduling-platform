@@ -35,7 +35,7 @@ import { usePathname } from "next/navigation";
 import { createBrowserClient } from "@supabase/ssr";
 import Link from "next/link";
 import { useCurrentUser } from "@/context/CurrentUserContext";
-import { Button } from "@/lib/mui/components";
+import { Avatar, Button } from "@/lib/mui/components";
 import { UserRole } from "@/types";
 import { ROLE_ROUTE_MAP } from "@/proxy";
 import Logo from "@/components/common/Logo";
@@ -143,23 +143,7 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
           alignItems="center"
           sx={{ px: 1, py: 1, borderRadius: 2, bgcolor: "primary" }}
         >
-          <Box
-            sx={{
-              width: 32,
-              height: 32,
-              borderRadius: 1,
-              background: "linear-gradient(135deg, #38bdf8 0%, #14b8a6 100%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              color: "white",
-              fontWeight: 600,
-              fontSize: 12,
-            }}
-          >
-            {currentUser?.firstName?.charAt(0) ?? "?"}
-            {currentUser?.lastName?.charAt(0) ?? ""}
-          </Box>
+          <Avatar firstName={`${currentUser?.firstName?.charAt(0)}`} lastName={`${currentUser?.lastName?.charAt(0)}`} />
           {isOpen && (
             <>
               <Box sx={{ flex: 1, minWidth: 0, height: 32 }}>

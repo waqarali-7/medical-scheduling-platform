@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import { Close } from "@/lib/mui/icons";
 import {
   Dialog as MuiDialog,
   DialogTitle,
@@ -34,7 +34,7 @@ const Dialog = React.forwardRef<HTMLDivElement, DialogProps>(({ title, children,
         <DialogTitle sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           {title}
           <IconButton onClick={onClose} size="small">
-            <CloseIcon fontSize="small" />
+            <Close fontSize="small" />
           </IconButton>
         </DialogTitle>
       )}

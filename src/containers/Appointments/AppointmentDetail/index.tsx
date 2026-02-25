@@ -17,6 +17,7 @@ import {
 } from "./components";
 import { CalendarMonth } from "@/lib/mui/icons";
 import { EmptyState } from "@/components/common";
+import { updateAppointmentStatus } from "@/app/actions/updateAppointmentStatus";
 
 export default function AppointmentDetail({ appointment }: AppointmentDetailProps) {
   const [currentStatus, setCurrentStatus] = useState<AppointmentStatus>(appointment?.status ?? "PENDING");
@@ -30,18 +31,32 @@ export default function AppointmentDetail({ appointment }: AppointmentDetailProp
   const { doctor, patient, clinic } = appointment;
   const displayId = appointment.id.length > 12 ? appointment.id.slice(0, 8) : appointment.id;
 
-  const handleTransition = (newStatus: AppointmentStatus) => {
+  const handleTransition = async (newStatus: AppointmentStatus) => {
     if (newStatus === "CANCELLED") {
       setShowCancelModal(true);
       return;
     }
-    if (canTransition(currentStatus, newStatus)) {
-      setCurrentStatus(newStatus);
+
+    if (!canTransition(currentStatus, newStatus)) return;
+
+    const result = await updateAppointmentStatus(appointment.id, newStatus);
+
+    if (result.success && result.data) {
+      setCurrentStatus(result.data.status);
+    } else {
+      console.error(result.error);
     }
   };
 
-  const handleCancel = () => {
-    setCurrentStatus("CANCELLED");
+  const handleCancel = async () => {
+    const result = await updateAppointmentStatus(appointment.id, "CANCELLED");
+
+    if (result.success && result.data) {
+      setCurrentStatus(result.data.status);
+    } else {
+      console.error(result.error);
+    }
+
     setShowCancelModal(false);
   };
 

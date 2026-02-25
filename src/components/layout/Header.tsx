@@ -4,7 +4,7 @@ import { Menu, Add, Brightness4, Brightness7, Search } from "@/lib/mui/icons";
 
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import Link from "next/link";
-import { Button, IconButton, InputAdornment } from "@/lib/mui/components";
+import { Avatar, Button, IconButton, InputAdornment } from "@/lib/mui/components";
 import { Box, TextField, Typography } from "@mui/material";
 import { useThemeMode } from "@/context/ThemeContext";
 import { Role } from "@/lib/enums";
@@ -90,26 +90,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       <IconButton onClick={toggleMode} color="inherit">
         {mode === "light" ? <Brightness4 /> : <Brightness7 />}
       </IconButton>
-      {/* User Avatar */}
-      <Box
-        sx={{
-          ml: 2,
-          width: 36,
-          height: 36,
-          borderRadius: 2,
-          background: "linear-gradient(135deg, #0284c7 0%, #14b8a6 100%)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          color: "white",
-          fontWeight: 600,
-          fontSize: 14,
-          cursor: "default",
-        }}
-      >
-        {currentUser?.firstName?.charAt(0) ?? "?"}
-        {currentUser?.lastName?.charAt(0) ?? ""}
-      </Box>
+      <Avatar firstName={`${currentUser?.firstName?.charAt(0)}`} lastName={`${currentUser?.lastName?.charAt(0)}`} />
     </Box>
   );
 }

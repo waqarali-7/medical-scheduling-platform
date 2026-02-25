@@ -127,7 +127,7 @@ function mapProfileRowToUser(r: ProfileRow): User {
   if (r.role === Role.DOCTOR) {
     return {
       ...base,
-      role: "DOCTOR",
+      role: Role.DOCTOR,
       specialization: r.specialization ?? "",
       qualifications: r.qualifications ?? [],
       clinicId: r.clinic_id ?? "",
@@ -143,7 +143,7 @@ function mapProfileRowToUser(r: ProfileRow): User {
 
   return {
     ...base,
-    role: "CLINIC_ADMIN",
+    role: Role.CLINIC_ADMIN,
     clinicId: r.clinic_id ?? "",
   } as ClinicAdmin;
 }
@@ -215,7 +215,7 @@ export async function getClinicById(id: string): Promise<Clinic> {
 export async function getDoctors(clinicId?: string): Promise<Doctor[]> {
   const supabase = await createClient();
 
-  let query = supabase.from("profiles").select("*").eq("role", "DOCTOR").order("last_name");
+  let query = supabase.from("profiles").select("*").eq("role", Role.DOCTOR).order("last_name");
 
   if (clinicId) {
     query = query.eq("clinic_id", clinicId);
@@ -235,7 +235,7 @@ export async function getDoctorById(id: string): Promise<(Doctor & { clinic?: Cl
     .from("profiles")
     .select("*, clinic:clinics!clinic_id(*)")
     .eq("id", id)
-    .eq("role", "DOCTOR")
+    .eq("role", Role.DOCTOR)
     .single();
 
   if (error || !data) return null;
@@ -265,12 +265,6 @@ export async function getHydratedAppointments(): Promise<Appointment[]> {
     query = query.eq("patient_id", currentUser.id);
   } else if (currentUser.role === Role.DOCTOR) {
     query = query.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === Role.CLINIC_ADMIN) {
-    // Clinic admins can see appointments for their clinic
-    const clinicId = (currentUser as ClinicAdmin).clinicId;
-    if (clinicId) {
-      query = query.eq("clinic_id", clinicId);
-    }
   }
 
   const { data, error } = await query.order("scheduled_at", { ascending: true });
@@ -296,12 +290,6 @@ export async function getAppointmentById(id: string): Promise<Appointment | null
     query = query.eq("patient_id", currentUser.id);
   } else if (currentUser.role === Role.DOCTOR) {
     query = query.eq("doctor_id", currentUser.id);
-  } else if (currentUser.role === Role.CLINIC_ADMIN) {
-    // Clinic admins can see appointments for their clinic
-    const clinicId = (currentUser as ClinicAdmin).clinicId;
-    if (clinicId) {
-      query = query.eq("clinic_id", clinicId);
-    }
   }
 
   const { data, error } = await query.single();
@@ -387,7 +375,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       const clinicDoctorsRes = await supabase
         .from("profiles")
         .select("id")
-        .eq("role", "DOCTOR")
+        .eq("role", Role.DOCTOR)
         .eq("clinic_id", clinicId);
 
       totalPatients = clinicPatientsRes.data?.length || 0;
@@ -421,15 +409,17 @@ export async function getMyPatients(): Promise<Patient[]> {
   const supabase = await createClient();
   const currentUser = await getCurrentUserProfile(supabase);
 
-  if (!currentUser || currentUser.role !== "DOCTOR") {
+  if (!currentUser || currentUser.role === Role.PATIENT) {
     return [];
   }
 
-  // Get all appointments for this doctor, then get unique patients
-  const { data: appointments, error } = await supabase
-    .from("appointments")
-    .select("patient_id")
-    .eq("doctor_id", currentUser.id);
+  let query = supabase.from("appointments").select("patient_id");
+
+  if (currentUser.role === Role.DOCTOR) {
+    query = query.eq("doctor_id", currentUser.id);
+  }
+
+  const { data: appointments, error } = await query;
 
   if (error) throw new Error(error.message);
 
@@ -441,7 +431,7 @@ export async function getMyPatients(): Promise<Patient[]> {
     .from("profiles")
     .select("*")
     .in("id", patientIds)
-    .eq("role", "PATIENT");
+    .eq("role", Role.PATIENT);
 
   if (patientsError) throw new Error(patientsError.message);
 
@@ -455,7 +445,7 @@ export async function getClinicAppointments(clinicId: string): Promise<Appointme
   if (!currentUser) throw new Error("User not authenticated");
 
   // Only clinic admins can access clinic-specific appointments
-  if (currentUser.role !== "CLINIC_ADMIN") {
+  if (currentUser.role !== Role.CLINIC_ADMIN) {
     throw new Error("Unauthorized access");
   }
 
@@ -491,7 +481,7 @@ export async function getMyClinic(): Promise<Clinic | null> {
   const supabase = await createClient();
   const currentUser = await getCurrentUserProfile(supabase);
 
-  if (!currentUser || currentUser.role !== "CLINIC_ADMIN") {
+  if (!currentUser || currentUser.role !== Role.CLINIC_ADMIN) {
     return null;
   }
 
@@ -660,9 +650,11 @@ export async function createAppointment(appointmentData: Omit<Appointment, "id" 
     .from("appointments")
     .insert([
       {
-        ...appointmentData,
         status: appointmentData.status,
         type: appointmentData.type,
+        patient_id: appointmentData.patientId,
+        clinic_id: appointmentData.clinicId,
+        doctor_id: appointmentData.doctorId,
         scheduled_at: appointmentData.scheduledAt,
         duration_minutes: appointmentData.durationMinutes,
         reason: appointmentData.reason,
@@ -713,4 +705,155 @@ export async function updateAppointmentStatus(id: string, status: AppointmentSta
   if (error) throw new Error(error.message);
 
   return mapAppointmentRow(data[0] as AppointmentRow);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   CLINIC MUTATIONS
+──────────────────────────────────────────────────────────────────────────── */
+
+export async function createClinic(clinicData: {
+  name: string;
+  phone: string;
+  email: string;
+  website?: string;
+  street: string;
+  postalCode: string;
+  city: string;
+  state: string;
+  openingHours: Clinic["openingHours"];
+  specializations: string[];
+}): Promise<Clinic> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Only clinic admins can create clinics
+  if (currentUser.role !== Role.CLINIC_ADMIN) {
+    throw new Error("Unauthorized: Only clinic admins can create clinics");
+  }
+
+  const { data, error } = await supabase
+    .from("clinics")
+    .insert([
+      {
+        name: clinicData.name,
+        phone: clinicData.phone,
+        email: clinicData.email,
+        website: clinicData.website || null,
+        address: {
+          street: clinicData.street,
+          postalCode: clinicData.postalCode,
+          city: clinicData.city,
+          state: clinicData.state,
+        },
+        opening_hours: clinicData.openingHours,
+        specializations: clinicData.specializations,
+        rating: 0,
+        review_count: 0,
+        image_url: null,
+      },
+    ])
+    .select()
+    .single();
+
+  if (error) throw new Error(error.message);
+
+  return mapClinicRow(data as ClinicRow);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   DOCTOR LINKING
+──────────────────────────────────────────────────────────────────────────── */
+
+export async function getUnlinkedDoctors(): Promise<Doctor[]> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Only clinic admins can view unlinked doctors
+  if (currentUser.role !== Role.CLINIC_ADMIN) {
+    throw new Error("Unauthorized: Only clinic admins can view unlinked doctors");
+  }
+
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("role", Role.DOCTOR)
+    .is("clinic_id", null)
+    .order("last_name");
+
+  if (error) throw new Error(error.message);
+
+  return (data ?? []).map((r) => mapProfileRowToUser(r as ProfileRow) as Doctor);
+}
+
+export async function linkDoctorToClinic(doctorId: string, clinicId: string): Promise<void> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Only clinic admins can link doctors
+  if (currentUser.role !== Role.CLINIC_ADMIN) {
+    throw new Error("Unauthorized: Only clinic admins can link doctors");
+  }
+
+  // Verify the clinic exists and admin has access to it
+  const adminClinicId = (currentUser as ClinicAdmin).clinicId;
+  if (!adminClinicId) {
+    throw new Error("Unauthorized: Cannot link doctors to other clinics");
+  }
+
+  // Check if doctor is already linked to a clinic
+  const { data: doctor, error: doctorError } = await supabase
+    .from("profiles")
+    .select("clinic_id")
+    .eq("id", doctorId)
+    .eq("role", Role.DOCTOR)
+    .single();
+
+  if (doctorError) throw new Error("Doctor not found");
+
+  if (doctor.clinic_id) {
+    throw new Error("Doctor is already linked to a clinic");
+  }
+
+  // Link doctor to clinic
+  const { error } = await supabase.from("profiles").update({ clinic_id: clinicId }).eq("id", doctorId);
+
+  if (error) throw new Error(error.message);
+}
+
+export async function unlinkDoctorFromClinic(doctorId: string): Promise<void> {
+  const supabase = await createClient();
+  const currentUser = await getCurrentUserProfile(supabase);
+
+  if (!currentUser) throw new Error("User not authenticated");
+
+  // Only clinic admins can unlink doctors
+  if (currentUser.role !== Role.CLINIC_ADMIN) {
+    throw new Error("Unauthorized: Only clinic admins can unlink doctors");
+  }
+
+  // Verify the doctor is linked to admin's clinic
+  const { data, error: doctorError } = await supabase
+    .from("profiles")
+    .select("clinic_id")
+    .eq("id", doctorId)
+    .eq("role", Role.DOCTOR)
+    .single();
+
+  if (doctorError) throw new Error("Doctor not found");
+
+  const adminClinicId = (currentUser as ClinicAdmin).clinicId;
+  if (!adminClinicId) {
+    throw new Error("Unauthorized: Cannot unlink doctors from other clinics");
+  }
+
+  // Unlink doctor from clinic
+  const { error } = await supabase.from("profiles").update({ clinic_id: null }).eq("id", doctorId);
+
+  if (error) throw new Error(error.message);
 }
