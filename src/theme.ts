@@ -496,9 +496,14 @@ export const getAppTheme = (mode: PaletteMode) => {
       MuiDialog: {
         styleOverrides: {
           paper: {
+            position: "relative",
+            borderRadius: 14,
+            padding: "5px",
+            boxShadow: isLight ? `0 8px 20px ${alpha(brandPrimary, 0.3)}` : `0 8px 20px ${alpha(brandSecondary, 0.3)}`,
+            border: "2px solid transparent",
             backgroundImage: "none",
-            borderTop: `3px solid`,
-            borderImage: `linear-gradient(90deg, ${brandPrimary} 0%, ${brandAccent} 50%, ${brandSecondary} 100%) 1`,
+            background: `linear-gradient(${isLight ? "#ffffff" : "#151b2e"}, ${isLight ? "#ffffff" : "#151b2e"}) padding-box, 
+                   conic-gradient(from 0deg, ${brandPrimary}, ${brandAccent}, ${brandSecondary}, ${brandPrimary}) border-box`,
           },
         },
       },

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 360" width="360" height="360">
+  <defs>
+<!--Gradient-->
+    <linearGradient id="circleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="50%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+<!--Mask only for PLUS cutout-->
+    <mask id="plusMask">
+<!--White = visible-->
+      <rect width="100%" height="100%" fill="white"/>
+<!--Black = cut out-->
+<!--Horizontal bar (shifted right & up)-->
+      <rect x="135" y="176" width="90" height="24" rx="6" fill="black"/>
+<!--Vertical bar-->
+      <rect x="168" y="145" width="24" height="90" rx="6" fill="black"/>
+    </mask>
+  </defs>
+<!--Background Circle-->
+  <circle cx="180" cy="180" r="170" fill="url(#circleGrad)"/>
+<!--Bag Body-->
+  <rect x="90" y="110" width="180" height="160" rx="24" fill="white" mask="url(#plusMask)"/>
+<!--Handle-->
+  <path d="M 148,125 L 148,108 Q 148,90 165,90 L 199,90 Q 216,90 216,108 L 216,125" fill="none" stroke="white" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

@@ -91,7 +91,7 @@ export default function DoctorCard({
                 </Box>
 
                 <Box>
-                  <Stack sx={{ gap: 2 }}>
+                  <Stack sx={{ gap: 2, display: "flex", alignItems: "end" }}>
                     <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
                       <Star sx={{ fontSize: 16, color: "warning.main" }} />
                       <Typography variant="body2" fontWeight={600} color="text.primary">
@@ -108,11 +108,10 @@ export default function DoctorCard({
                         size="small"
                         color="error"
                         sx={{
-                          bgcolor: "background.paper",
-                          boxShadow: 1,
-                          zIndex: 1,
+                          width: 30,
                           "&:hover": {
-                            bgcolor: "error.lighter",
+                            bgcolor: "error.dark",
+                            color: "error.lighter",
                           },
                         }}
                       >
