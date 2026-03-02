@@ -41,7 +41,7 @@ export default function StatusCard({ currentStatus, onTransition }: StatusCardPr
         {STATE_ORDER.map((state) => {
           const config = STATUS_CONFIG[state];
           return (
-            <Step key={state} completed={STATE_ORDER.indexOf(currentStatus) > STATE_ORDER.indexOf(state)}>
+            <Step key={state} completed={STATE_ORDER.indexOf(currentStatus) >= STATE_ORDER.indexOf(state)}>
               <StepLabel>{config.label}</StepLabel>
             </Step>
           );

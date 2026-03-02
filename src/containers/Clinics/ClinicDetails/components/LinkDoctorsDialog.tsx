@@ -5,6 +5,7 @@ import { Button, Typography, Box, Alert, Stack, Chip, Paper, Loading, Dialog } f
 import { PersonAdd, Star, Public } from "@/lib/mui/icons";
 import type { Doctor } from "@/types";
 import { linkDoctor } from "@/app/actions/linkDoctor";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface LinkDoctorsDialogProps {
   open: boolean;
@@ -14,6 +15,7 @@ interface LinkDoctorsDialogProps {
 }
 
 export function LinkDoctorsDialog({ open, onClose, clinicId, unlinkedDoctors }: LinkDoctorsDialogProps) {
+  const queryClient = useQueryClient();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -26,6 +28,7 @@ export function LinkDoctorsDialog({ open, onClose, clinicId, unlinkedDoctors }: 
       const result = await linkDoctor(doctorId, clinicId);
 
       if (result.success) {
+        queryClient.invalidateQueries({ queryKey: ["clinic", clinicId] });
         setSuccess(`Successfully linked ${doctorName}`);
         setTimeout(() => {
           setSuccess(null);

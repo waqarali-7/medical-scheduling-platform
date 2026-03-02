@@ -18,6 +18,7 @@ import type { Doctor, Clinic } from "@/types";
 import { formatCurrency } from "@/lib/utils";
 import { useState, useTransition } from "react";
 import { Stack } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DoctorCardProps {
   doctor: Doctor;
@@ -36,6 +37,7 @@ export default function DoctorCard({
   onUnlink,
   isUnlinking = false,
 }: DoctorCardProps) {
+  const queryClient = useQueryClient();
   const clinic = clinics.find((c) => c.id === doctor.clinicId);
   const [openConfirm, setOpenConfirm] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -50,6 +52,7 @@ export default function DoctorCard({
     startTransition(async () => {
       if (onUnlink) {
         await onUnlink(doctor.id, `${doctor.firstName} ${doctor.lastName}`);
+        queryClient.invalidateQueries({ queryKey: ["clinic"] });
       }
 
       setOpenConfirm(false);
