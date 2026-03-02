@@ -1,21 +1,20 @@
 "use client";
 
-import { Menu, Add, Brightness4, Brightness7, Search } from "@/lib/mui/icons";
-
-import { useCurrentUser } from "@/context/CurrentUserContext";
+import {Menu, Add, Brightness4, Brightness7, Search} from "@/lib/mui/icons";
+import {useCurrentUser} from "@/context/CurrentUserContext";
 import Link from "next/link";
-import { Avatar, Button, IconButton, InputAdornment } from "@/lib/mui/components";
-import { Box, TextField, Typography } from "@mui/material";
-import { useThemeMode } from "@/context/ThemeContext";
-import { Role } from "@/lib/enums";
+import {Button, IconButton, InputAdornment} from "@/lib/mui/components";
+import {Box, TextField, Typography} from "@mui/material";
+import {useThemeMode} from "@/context/ThemeContext";
+import {Role} from "@/lib/enums";
 
 interface HeaderProps {
   onMenuClick: () => void;
   title?: string;
 }
 
-export default function Header({ onMenuClick, title }: HeaderProps) {
-  const { mode, toggleMode } = useThemeMode();
+export default function Header({onMenuClick, title}: HeaderProps) {
+  const {mode, toggleMode} = useThemeMode();
   const currentUser = useCurrentUser();
 
   return (
@@ -28,7 +27,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
         display: "flex",
         justifyContent: "end",
         alignItems: "center",
-        px: { xs: 2, lg: 3 },
+        px: {xs: 2, lg: 3},
         gap: 2,
         position: "sticky",
         top: 0,
@@ -37,13 +36,13 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       }}
     >
       {/* Mobile menu toggle */}
-      <IconButton onClick={onMenuClick} sx={{ display: { lg: "none" } }}>
+      <IconButton onClick={onMenuClick} sx={{display: {lg: "none"}}}>
         <Menu />
       </IconButton>
 
       {/* Title */}
       {title && (
-        <Typography variant="h6" sx={{ display: { lg: "none" }, fontWeight: 600 }}>
+        <Typography variant="h6" sx={{display: {lg: "none"}, fontWeight: 600}}>
           {title}
         </Typography>
       )}
@@ -56,7 +55,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
           variant="primary"
           startIcon={<Add />}
           sx={{
-            display: { xs: "none", sm: "flex" },
+            display: {xs: "none", sm: "flex"},
           }}
         >
           New Appointment
@@ -67,7 +66,7 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       <Box
         sx={{
           display: "flex",
-          flex: { xs: "1", lg: "4" },
+          flex: {xs: "1", lg: "4"},
           maxWidth: 400,
         }}
       >
@@ -90,7 +89,6 @@ export default function Header({ onMenuClick, title }: HeaderProps) {
       <IconButton onClick={toggleMode} color="inherit">
         {mode === "light" ? <Brightness4 /> : <Brightness7 />}
       </IconButton>
-      <Avatar firstName={`${currentUser?.firstName?.charAt(0)}`} lastName={`${currentUser?.lastName?.charAt(0)}`} />
     </Box>
   );
 }

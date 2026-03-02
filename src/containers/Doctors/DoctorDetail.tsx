@@ -1,7 +1,9 @@
 "use client";
 
+import { useEffect } from "react";
+import { useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Box, Stack } from "@/lib/mui/components";
-import type { Doctor, Clinic, Appointment } from "@/types";
 import Breadcrumb from "@/lib/mui/components/Breadcrumb";
 import {
   DoctorProfileHeader,
@@ -15,15 +17,25 @@ import {
 } from "./components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import { Role } from "@/lib/enums";
+import { useDoctorQuery } from "@/hooks/doctors";
+import { default as DoctorDetailLoading } from "./DoctorDetailLoadingSkeleton";
 
-interface DoctorDetailProps {
-  doctor: Doctor & { clinic?: Clinic };
-  appointments: Appointment[];
-}
-
-export default function DoctorDetail({ doctor, appointments }: DoctorDetailProps) {
-  const clinic = doctor.clinic;
+export default function DoctorDetail() {
+  const params = useParams();
+  const id = typeof params?.id === "string" ? params.id : null;
+  const { data, isLoading, isError, error, isFetched } = useDoctorQuery({ doctorId: id });
   const currentUser = useCurrentUser();
+
+  useEffect(() => {
+    if (isFetched && !isLoading && (data === null || isError)) notFound();
+  }, [isFetched, isLoading, data, isError]);
+
+  if (isLoading) return <DoctorDetailLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
+
+  const { doctor, appointments } = data;
+  const clinic = doctor.clinic;
 
   return (
     <Box sx={{ maxWidth: 1400, mx: "auto", py: 4, px: 2 }}>

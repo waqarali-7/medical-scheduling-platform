@@ -3,11 +3,20 @@
 import { Box, Grid, Stack } from "@/lib/mui/components";
 import type { Appointment, Patient } from "@/types";
 import { PatientListHeader, PatientCard } from "./components";
-import type { PatientListProps } from "@/containers/Patients/types";
 import { EmptyState } from "@/components/common";
 import { People } from "@/lib/mui/icons";
+import { usePatientsQuery } from "@/hooks/patients";
+import { default as PatientsLoading } from "./LoadingSkeleton";
 
-export default function PatientList({ patients, appointments }: PatientListProps) {
+export default function PatientList() {
+  const { data, isLoading, isError, error } = usePatientsQuery();
+
+  if (isLoading) return <PatientsLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
+
+  const { patients, appointments } = data;
+
   return (
     <Box sx={{ py: 4, px: 2 }}>
       <Stack spacing={4}>

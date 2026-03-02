@@ -16,7 +16,7 @@ export default function LocationStep({ formData, onChange }: LocationStepProps) 
 
       <TextField
         fullWidth
-        label="Street Address *"
+        label="Street Address"
         value={formData.street}
         onChange={(e) => onChange("street", e.target.value)}
         placeholder="e.g., Friedrichstraße 123"
@@ -27,7 +27,7 @@ export default function LocationStep({ formData, onChange }: LocationStepProps) 
         <Grid size={{ xs: 12, sm: 4 }}>
           <TextField
             fullWidth
-            label="Postal Code *"
+            label="Postal Code"
             value={formData.postalCode}
             onChange={(e) => onChange("postalCode", e.target.value)}
             placeholder="e.g., 10117"
@@ -37,7 +37,7 @@ export default function LocationStep({ formData, onChange }: LocationStepProps) 
         <Grid size={{ xs: 12, sm: 8 }}>
           <TextField
             fullWidth
-            label="City *"
+            label="City"
             value={formData.city}
             onChange={(e) => onChange("city", e.target.value)}
             placeholder="e.g., Berlin"
@@ -48,7 +48,7 @@ export default function LocationStep({ formData, onChange }: LocationStepProps) 
 
       <TextField
         fullWidth
-        label="State/Region *"
+        label="State/Region"
         value={formData.state}
         onChange={(e) => onChange("state", e.target.value)}
         placeholder="e.g., Berlin"

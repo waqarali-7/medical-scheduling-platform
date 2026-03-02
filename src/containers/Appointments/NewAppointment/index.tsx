@@ -4,17 +4,25 @@ import { useReducer } from "react";
 import { useRouter } from "next/navigation";
 import type { TimeSlot } from "@/types";
 import { Box, Stepper, Step, StepLabel, Card, Alert } from "@/lib/mui/components";
-import type { NewAppointmentProps } from "./types";
 import { STEP_LABELS, getAvailableDates } from "./constants";
 import { PageHeader, DoctorSelectStep, DateTimeStep, DetailsStep, ReviewStep, StepNavigation } from "./components";
 import { appointmentReducer, initialState } from "./reducer";
 import { createAppointment } from "@/app/actions/createAppointment";
 import { useCurrentUser } from "@/context/CurrentUserContext";
+import { useDoctorsQuery } from "@/hooks/doctors";
+import { default as NewAppointmentLoading } from "./Loading";
 
-export default function NewAppointment({ doctors, clinics }: NewAppointmentProps) {
+export default function NewAppointment() {
   const router = useRouter();
   const user = useCurrentUser();
+  const { data, isLoading, isError, error } = useDoctorsQuery();
   const [state, dispatch] = useReducer(appointmentReducer, initialState);
+
+  if (isLoading) return <NewAppointmentLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
+
+  const { doctors, clinics } = data;
 
   const availableDates = getAvailableDates();
   const clinic = state.formData.selectedDoctor

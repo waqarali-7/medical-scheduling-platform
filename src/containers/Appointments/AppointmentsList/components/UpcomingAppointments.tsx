@@ -4,8 +4,11 @@ import { AppointmentCard } from "./AppointmentCard";
 import { EmptyState } from "@/components/common";
 import { Appointment } from "@/types";
 import Link from "next/link";
+import { useCurrentUser } from "@/context/CurrentUserContext";
+import { Role } from "@/lib/enums";
 
 export function UpcomingAppointments({ appointments }: { appointments: Appointment[] }) {
+  const currentUser = useCurrentUser();
   return (
     <Grid size={{ xs: 12, xl: 8 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
@@ -33,11 +36,19 @@ export function UpcomingAppointments({ appointments }: { appointments: Appointme
           element={<CalendarMonth sx={{ fontSize: 48 }} />}
           primary="No upcoming appointments"
           cta={
-            <Box sx={{ justifyContent: "center", display: "flex" }}>
-              <Button component={Link} href="/appointments/new" variant="secondary" startIcon={<Add />} sx={{ mt: 2 }}>
-                Book your first appointment
-              </Button>
-            </Box>
+            currentUser?.role === Role.PATIENT && (
+              <Box sx={{ justifyContent: "center", display: "flex" }}>
+                <Button
+                  component={Link}
+                  href="/appointments/new"
+                  variant="secondary"
+                  startIcon={<Add />}
+                  sx={{ mt: 2 }}
+                >
+                  Book your first appointment
+                </Button>
+              </Box>
+            )
           }
         />
       )}

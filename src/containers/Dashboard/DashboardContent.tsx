@@ -4,19 +4,20 @@ import { Box, Grid, Stack } from "@/lib/mui/components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import { Header, Overview } from "./components";
 import { AvailableDoctors, DoctorsRecentActivity } from "@/containers/Doctors/components";
-import type { Appointment, Doctor, Clinic, DashboardStats } from "@/types";
 import { UpcomingAppointments } from "../Appointments/AppointmentsList/components/UpcomingAppointments";
 import { Role } from "@/lib/enums";
+import { useDashboardQuery } from "@/hooks/dashboard";
+import { default as DashboardLoading } from "./Loading";
 
-interface DashboardContentProps {
-  allAppointments: Appointment[];
-  stats: DashboardStats;
-  doctors: Doctor[];
-  clinics: Clinic[];
-}
-
-export default function DashboardContent({ allAppointments, stats, doctors, clinics }: DashboardContentProps) {
+export default function DashboardContent() {
   const currentUser = useCurrentUser();
+  const { data, isLoading, isError, error } = useDashboardQuery();
+
+  if (isLoading) return <DashboardLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
+
+  const { allAppointments, stats, doctors, clinics } = data;
 
   const upcomingAppointments = allAppointments
     .filter((a) => (a.status === "CONFIRMED" || a.status === "PENDING") && new Date(a.scheduledAt) >= new Date())

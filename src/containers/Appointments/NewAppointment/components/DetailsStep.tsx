@@ -66,7 +66,8 @@ export default function DetailsStep({
 
       <TextField
         fullWidth
-        label="Reason for Visit *"
+        label="Reason for Visit"
+        required
         multiline
         rows={3}
         value={reason}

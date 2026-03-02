@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { canTransition } from "@/lib/utils";
 import type { AppointmentStatus } from "@/types";
 import { Box, Grid, Card, Stack } from "@/lib/mui/components";
-import type { AppointmentDetailProps } from "./types";
 import {
   DetailHeader,
   StatusCard,
@@ -15,19 +16,32 @@ import {
   MetadataCard,
   CancelDialog,
 } from "./components";
-import { CalendarMonth } from "@/lib/mui/icons";
-import { EmptyState } from "@/components/common";
 import { updateAppointmentStatus } from "@/app/actions/updateAppointmentStatus";
+import { useAppointmentQuery } from "@/hooks/appointments";
+import { default as AppointmentDetailLoading } from "./Loading";
 
-export default function AppointmentDetail({ appointment }: AppointmentDetailProps) {
-  const [currentStatus, setCurrentStatus] = useState<AppointmentStatus>(appointment?.status ?? "PENDING");
+export default function AppointmentDetail() {
+  const params = useParams();
+  const id = typeof params?.id === "string" ? params.id : null;
+  const { data, isLoading, isError, error, isFetched } = useAppointmentQuery({ appointmentId: id });
+
+  const [currentStatus, setCurrentStatus] = useState<AppointmentStatus>("PENDING");
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
 
-  if (!appointment) {
-    return <EmptyState element={<CalendarMonth sx={{ fontSize: 48 }} />} primary="No appointments found" />;
-  }
+  useEffect(() => {
+    if (isFetched && !isLoading && (data === null || isError)) notFound();
+  }, [isFetched, isLoading, data, isError]);
 
+  useEffect(() => {
+    if (data?.status) setCurrentStatus(data.status);
+  }, [data?.status]);
+
+  if (isLoading) return <AppointmentDetailLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
+
+  const appointment = data;
   const { doctor, patient, clinic } = appointment;
   const displayId = appointment.id.length > 12 ? appointment.id.slice(0, 8) : appointment.id;
 

@@ -23,7 +23,6 @@ import {
   Dashboard,
   CalendarMonth,
   People,
-  Settings,
   Logout,
   ChevronRight,
   MedicalServices,
@@ -199,12 +198,6 @@ export default function Sidebar({ isOpen, toggleSidebar, mobile = false, onLinkC
 
       <Box sx={{ py: 2, borderTop: 1, borderColor: "divider" }}>
         <List>
-          <ListItemButton component={Link} href="/settings" sx={{ borderRadius: 2, paddingStart: 3, height: 48 }}>
-            <ListItemIcon>
-              <Settings sx={{ fontSize: 22 }} />
-            </ListItemIcon>
-            {isOpen && <ListItemText primary="Settings" />}
-          </ListItemButton>
           <ListItemButton
             onClick={handleLogoutClick}
             sx={{ borderRadius: 2, paddingStart: 3, height: 48, color: "error.main" }}

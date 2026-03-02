@@ -1,10 +1,7 @@
-"use client";
-
-import type { ReactNode } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider, CssBaseline } from "@mui/material";
-import { getAppTheme } from "@/theme";
-import { ThemeProviderWrapper, useThemeMode } from "@/context/ThemeContext";
+import type {ReactNode} from "react";
+import {Geist, Geist_Mono} from "next/font/google";
+import {getCurrentUser} from "@/lib/supabase/data";
+import AppLayout from "@/components/layout/AppLayout";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,23 +14,13 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-function InnerTheme({ children }: { children: ReactNode }) {
-  const { mode } = useThemeMode();
-  return (
-    <ThemeProvider theme={getAppTheme(mode)}>
-      <CssBaseline />
-      {children}
-    </ThemeProvider>
-  );
-}
+export default async function RootLayout({children}: {children: ReactNode}) {
+  const user = await getCurrentUser();
 
-export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`} suppressHydrationWarning>
-        <ThemeProviderWrapper>
-          <InnerTheme>{children}</InnerTheme>
-        </ThemeProviderWrapper>
+        <AppLayout user={user}>{children}</AppLayout>
       </body>
     </html>
   );

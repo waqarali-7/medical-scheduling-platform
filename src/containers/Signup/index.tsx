@@ -47,11 +47,12 @@ export default function SignupContent() {
   const password = watch("password");
   const confirmPassword = watch("confirmPassword");
   const role = watch("role");
+  const tel = watch("phone");
   const firstName = watch("firstName");
   const lastName = watch("lastName");
   const strength = PasswordStrength.score(password ?? "");
   const passwordsMatch = Boolean(password && confirmPassword && password === confirmPassword);
-  const canSubmit = Boolean(firstName?.trim() && lastName?.trim() && passwordsMatch);
+  const canSubmit = Boolean(firstName?.trim() && lastName?.trim() && tel.trim() && passwordsMatch);
 
   const onSubmit = async (data: SignupFormValues) => {
     dispatch({type: "CLEAR_MESSAGES"});
@@ -256,12 +257,12 @@ export default function SignupContent() {
                 render={({field}) => (
                   <Input
                     fullWidth
+                    required
                     label="Phone Number"
-                    type="tel"
+                    type="number"
                     value={field.value}
                     onChange={(e) => field.onChange(e.target.value)}
                     onBlur={field.onBlur}
-                    autoComplete="tel"
                     slotProps={{
                       input: {
                         startAdornment: (

@@ -16,7 +16,7 @@ export default function BasicInfoStep({ formData, onChange }: BasicInfoStepProps
 
       <TextField
         fullWidth
-        label="Clinic Name *"
+        label="Clinic Name"
         value={formData.name}
         onChange={(e) => onChange("name", e.target.value)}
         placeholder="e.g., Berlin Medical Center"
@@ -25,7 +25,8 @@ export default function BasicInfoStep({ formData, onChange }: BasicInfoStepProps
 
       <TextField
         fullWidth
-        label="Phone Number *"
+        label="Phone Number"
+        type="number"
         value={formData.phone}
         onChange={(e) => onChange("phone", e.target.value)}
         placeholder="e.g., +49 30 1234567"
@@ -34,7 +35,7 @@ export default function BasicInfoStep({ formData, onChange }: BasicInfoStepProps
 
       <TextField
         fullWidth
-        label="Email Address *"
+        label="Email Address"
         type="email"
         value={formData.email}
         onChange={(e) => onChange("email", e.target.value)}

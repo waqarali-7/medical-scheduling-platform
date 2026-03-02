@@ -5,16 +5,20 @@ import { Box, Stack } from "@/lib/mui/components";
 import { AppointmentsHeader, FiltersCard, AppointmentCard } from "./components";
 import { useCurrentUser } from "@/context/CurrentUserContext";
 import type { AppointmentStatus, AppointmentType } from "@/types";
-import type { AppointmentsListProps } from "./types";
 import { CalendarMonth } from "@/lib/mui/icons";
 import { EmptyState } from "@/components/common";
+import { useAppointmentsQuery } from "@/hooks/appointments";
+import { default as AppointmentsLoading } from "./Loading";
 
-export default function AppointmentsList({ initialAppointments }: AppointmentsListProps) {
+export default function AppointmentsList() {
   const currentUser = useCurrentUser();
+  const { data, isLoading, isError, error } = useAppointmentsQuery();
   const [activeStatus, setActiveStatus] = useState<AppointmentStatus | "ALL">("ALL");
   const [activeType, setActiveType] = useState<AppointmentType | "ALL">("ALL");
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"date" | "status">("date");
+
+  const initialAppointments = data?.initialAppointments ?? [];
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { ALL: initialAppointments.length };
@@ -48,6 +52,10 @@ export default function AppointmentsList({ initialAppointments }: AppointmentsLi
         return a.status.localeCompare(b.status);
       });
   }, [initialAppointments, activeStatus, activeType, search, sortBy]);
+
+  if (isLoading) return <AppointmentsLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
 
   return (
     <Box sx={{ py: 4, px: 2 }}>

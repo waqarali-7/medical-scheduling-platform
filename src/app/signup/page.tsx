@@ -1,5 +1,1 @@
-import SignupContent from "@/containers/Signup";
-
-export default function SignupPage() {
-  return <SignupContent />;
-}
+export { default } from "@/containers/Signup";

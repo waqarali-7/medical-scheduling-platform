@@ -800,12 +800,6 @@ export async function linkDoctorToClinic(doctorId: string, clinicId: string): Pr
     throw new Error("Unauthorized: Only clinic admins can link doctors");
   }
 
-  // Verify the clinic exists and admin has access to it
-  const adminClinicId = (currentUser as ClinicAdmin).clinicId;
-  if (!adminClinicId) {
-    throw new Error("Unauthorized: Cannot link doctors to other clinics");
-  }
-
   // Check if doctor is already linked to a clinic
   const { data: doctor, error: doctorError } = await supabase
     .from("profiles")
@@ -838,7 +832,7 @@ export async function unlinkDoctorFromClinic(doctorId: string): Promise<void> {
   }
 
   // Verify the doctor is linked to admin's clinic
-  const { data, error: doctorError } = await supabase
+  const { error: doctorError } = await supabase
     .from("profiles")
     .select("clinic_id")
     .eq("id", doctorId)
@@ -846,11 +840,6 @@ export async function unlinkDoctorFromClinic(doctorId: string): Promise<void> {
     .single();
 
   if (doctorError) throw new Error("Doctor not found");
-
-  const adminClinicId = (currentUser as ClinicAdmin).clinicId;
-  if (!adminClinicId) {
-    throw new Error("Unauthorized: Cannot unlink doctors from other clinics");
-  }
 
   // Unlink doctor from clinic
   const { error } = await supabase.from("profiles").update({ clinic_id: null }).eq("id", doctorId);

@@ -1,9 +1,5 @@
 import type { Appointment, AppointmentStatus, AppointmentType, UserRole } from "@/types";
 
-export interface AppointmentsListProps {
-  initialAppointments: Appointment[];
-}
-
 export interface AppointmentCardProps {
   appointment: Appointment;
   view?: "patient" | "doctor" | "admin";

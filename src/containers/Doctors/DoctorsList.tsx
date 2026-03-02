@@ -1,22 +1,22 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Box, Stack, Typography } from "@/lib/mui/components";
-import type { Doctor, Clinic } from "@/types";
-import { DoctorCard, DoctorDetailHeader, DoctorFilters } from "./components";
-import { EmptyState } from "@/components/common";
-import { MedicalServices } from "@/lib/mui/icons";
+import {useState, useMemo} from "react";
+import {Box, Stack, Typography} from "@/lib/mui/components";
+import {DoctorCard, DoctorDetailHeader, DoctorFilters} from "./components";
+import {EmptyState} from "@/components/common";
+import {MedicalServices} from "@/lib/mui/icons";
+import {useDoctorsQuery} from "@/hooks/doctors";
+import {default as DoctorsLoading} from "./DoctorsListLoadingSkeleton";
 
-interface DoctorsListPageProps {
-  doctors: Doctor[];
-  clinics: Clinic[];
-}
-
-export default function DoctorsListPage({ doctors, clinics }: DoctorsListPageProps) {
+export default function DoctorsListPage() {
+  const {data, isLoading, isError, error} = useDoctorsQuery();
   const [search, setSearch] = useState("");
   const [selectedSpec, setSelectedSpec] = useState("All");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
   const [sortBy, setSortBy] = useState<"rating" | "name" | "fee">("rating");
+
+  const doctors = data?.doctors ?? [];
+  const clinics = data?.clinics ?? [];
 
   const filtered = useMemo(() => {
     return doctors
@@ -25,12 +25,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
         if (selectedSpec !== "All" && d.specialization !== selectedSpec) return false;
         if (search) {
           const q = search.toLowerCase();
-          return (
-            d.firstName.toLowerCase().includes(q) ||
-            d.lastName.toLowerCase().includes(q) ||
-            d.specialization.toLowerCase().includes(q) ||
-            d.bio?.toLowerCase().includes(q)
-          );
+          return d.firstName.toLowerCase().includes(q) || d.lastName.toLowerCase().includes(q) || d.specialization.toLowerCase().includes(q) || d.bio?.toLowerCase().includes(q);
         }
         return true;
       })
@@ -42,8 +37,12 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
       });
   }, [doctors, search, selectedSpec, onlyAvailable, sortBy]);
 
+  if (isLoading) return <DoctorsLoading />;
+  if (isError) return <div>Error: {error?.message}</div>;
+  if (!data) return null;
+
   return (
-    <Box sx={{ py: 4, px: 2 }}>
+    <Box sx={{py: 4, px: 2}}>
       <DoctorDetailHeader doctors={doctors} clinics={clinics} />
 
       <DoctorFilters
@@ -57,7 +56,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
         setSortBy={setSortBy}
       />
 
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+      <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
         Showing <strong>{filtered.length}</strong> doctor{filtered.length !== 1 ? "s" : ""}
       </Typography>
 
@@ -68,11 +67,7 @@ export default function DoctorsListPage({ doctors, clinics }: DoctorsListPagePro
           ))}
         </Stack>
       ) : (
-        <EmptyState
-          element={<MedicalServices sx={{ fontSize: 48 }} />}
-          primary="No doctors found."
-          secondary="Try adjusting your search or filters"
-        />
+        <EmptyState element={<MedicalServices sx={{fontSize: 48}} />} primary="No doctors found." secondary="Try adjusting your search or filters" />
       )}
     </Box>
   );
